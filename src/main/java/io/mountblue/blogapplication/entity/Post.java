@@ -25,9 +25,7 @@ public class Post {
 
     private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id")
-    private User user;
+    private String author;
 
     @Column(name = "published_at")
     private LocalDateTime publishedAt;
