@@ -33,4 +33,11 @@ public class PostTag {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public Post getPost() {
+        return post;
+    }
+
+    public Tag getTag() {
+        return tag;
+    }
 }
