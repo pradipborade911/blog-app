@@ -1,23 +1,35 @@
 package io.mountblue.blogapplication.dto;
 
-import io.mountblue.blogapplication.entity.Tag;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-@Data
+@Setter
+@Getter
+@ToString
 public class PostDTO {
-
     private Long id;
 
     private String title;
 
-    private String author;
-
     private String content;
 
-    private LocalDateTime publishedAt;
+    private LocalDateTime createdAt;
 
-    private Set<Tag> tags;
+    private LocalDateTime updatedAt;
+
+    private String author = "Default User";
+
+    private List<String> tagsList = new ArrayList<>();
+
+    private List<CommentDTO> comments = new ArrayList<>();
+    
+    public void addTag(String tag){
+            tagsList.add(tag);
+    }
+
 }

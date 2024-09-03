@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="'Post - ' + ${post.title}"/>
+</head>
+<body>
+<h1 th:text="${post.title}">Post Title</h1>
+
+<div>
+    <p><strong>Author:</strong> <span th:text="${post.author}"/></p>
+    <p><strong>Created At:</strong> <span th:text="${post.createdAt}"/></p>
+    </div>
+
+<div>
+    <h2>Content</h2>
+    <p th:text="${post.content}"/>
+</div>
+
+<div>
+    <h2>Tags</h2>
+    <ul>
+        <li th:each="tag : ${post.tagsList}" th:text="${tag}">Tag</li>
+    </ul>
+</div>
+
+<div th:if="${post.comments != null}">
+    <h2>Comments</h2>
+    <ul>
+        <li th:each="comment : ${post.comments}">
+            <p><strong>Author:</strong> <span th:text="${comment.author}">Comment Author</span></p>
+            <p th:text="${comment.content}">Comment Content</p>
+        </li>
+    </ul>
+</div>
+</body>
+</html>

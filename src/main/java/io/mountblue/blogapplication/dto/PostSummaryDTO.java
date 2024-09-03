@@ -1,12 +1,16 @@
 package io.mountblue.blogapplication.dto;
 
 import io.mountblue.blogapplication.entity.Tag;
-import lombok.Data;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 public class PostSummaryDTO {
 
     private Long id;
@@ -19,5 +23,5 @@ public class PostSummaryDTO {
 
     private LocalDateTime publishedAt;
 
-    private Set<Tag> tags;
+    private Set<TagDTO> tags = new HashSet<>();
 }

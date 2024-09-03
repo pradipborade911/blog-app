@@ -2,15 +2,15 @@ package io.mountblue.blogapplication.controller;
 
 import io.mountblue.blogapplication.dto.PostDTO;
 import io.mountblue.blogapplication.dto.PostSummaryDTO;
-import io.mountblue.blogapplication.entity.Post;
 import io.mountblue.blogapplication.service.PostService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("post")
 @Controller
 public class PostController {
     @Autowired
@@ -28,15 +28,16 @@ public class PostController {
     }
 
 
-    @PostMapping
-    @ResponseBody
-    public PostDTO createPost(@ModelAttribute Post post){
-        return postService.savePost(post);
+    @PostMapping("/newpost")
+    public String createPost(@ModelAttribute PostDTO postRequestDTO, Model model){
+        PostDTO postDTO = postService.savePost(postRequestDTO);
+        model.addAttribute("post",postDTO);
+        return "post";
     }
 
-    @GetMapping("/new")
+    @GetMapping("/newpost")
     public String createPost(){
-        return "new_post";
+        return "newpost";
     }
 
 }

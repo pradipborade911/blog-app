@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Create New Post</title>
+</head>
+<style>
+    #main, #form{
+    display: flex;
+    flex-direction: column;
+    }
+    #form > * {
+        padding: 3px;
+        margin: 5px;
+    }
+</style>
+<body>
+<div id="main">
+<h1>New Post</h1>
+<form action="/newpost" method="post" id="form">
+    <input type="text" id="title" name="title" placeholder="Title" required>
+
+    <label for="tags"></label>
+    <input type="text" id="tags" name="tagsList" placeholder="Tags" required>
+
+    <label for="excerpt"></label>
+    <input type="text" id="excerpt" name="excerpt" placeholder="Excerpt" required>
+
+    <label for="content"></label>
+    <textarea id="content" name="content" rows="5" required placeholder="Write here..."></textarea>
+
+    <button type="submit">Publish</button>
+</form>
+</div>
+</body>
+</html>
