@@ -1,35 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog Posts</title>
-    <link rel="stylesheet" href="./../static/blog_posts.css">
+    <title>Post Summaries</title>
+    <style>
+
+        body{
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #main {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .post-summary {
+            margin: 10px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            width: calc(33% - 20px);
+            box-sizing: border-box;
+        }
+
+        .post-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .excerpt {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .post-info {
+            display: flex;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .post-tags-info {
+            display: flex;
+            flex-wrap: wrap;
+            background-color: #eee;
+            padding: 2px 5px;
+            margin: 5px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Blog Application</h1>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/about">About</a>
-            <a href="/contact">Contact</a>
-            <a href="/login">Login</a>
-        </nav>
-    </header>
-    
-    <main>
-        <h2>Blog Posts</h2>
-        <div class="post-list">
-            <div th:each="post : ${posts}" class="post-item">
-                <h3 th:text="${post.title}">Post Title</h3>
-                <p class="excerpt" th:text="${post.excerpt}">Post Excerpt</p>
-                <p class="author">By <span th:text="${post.author}">Author Name</span></p>
-                <p class="date" th:text="${#dates.format(post.publishedAt, 'yyyy-MM-dd HH:mm')}">Published Date</p>
-                <p class="tags">
-                    Tags: <span th:each="tag : ${post.tags}" th:text="${tag.name}">Tag</span>
-                </p>
-            </div>
-        </div>
-    </main>
+<h1>Post Summaries</h1>
+<div id="main">
+<div th:each="post : ${posts}" class="post-summary">
+    <h2 class="post-title" th:text="${post.title}"></h2>
+    <div class="post-info">
+        <span th:text="${post.author} + ', ' + ${post.publishedAt}"></span>
+    </div>
+    <p class="post-info" th:text="${post.excerpt}"></p>
+    <div class="post-tags">
+        <span class="post-tags-info" th:each="tag : ${post.tags}" th:text="${tag.name}"></span>
+    </div>
+</div>
+</div>
 </body>
 </html>

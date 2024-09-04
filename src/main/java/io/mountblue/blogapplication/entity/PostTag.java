@@ -20,11 +20,11 @@ public class PostTag {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name ="post_id")
+    @JoinColumn(name = "post_id")
     private Post post;
 
     @ManyToOne
-    @JoinColumn(name ="tag_id")
+    @JoinColumn(name = "tag_id")
     private Tag tag;
 
     @Column(name = "created_at")

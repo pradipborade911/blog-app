@@ -22,14 +22,16 @@ public class PostDTO {
 
     private LocalDateTime updatedAt;
 
+    private String excerpt;
+
     private String author = "Default User";
 
     private List<String> tagsList = new ArrayList<>();
 
     private List<CommentDTO> comments = new ArrayList<>();
-    
-    public void addTag(String tag){
-            tagsList.add(tag);
+
+    public void addTag(String tag) {
+        tagsList.add(tag);
     }
 
 }

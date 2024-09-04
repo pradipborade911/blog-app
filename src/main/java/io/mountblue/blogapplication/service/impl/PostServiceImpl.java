@@ -12,37 +12,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
-    @Autowired
-    PostRepository postRepository;
 
     @Autowired
-    TagRepository tagRepository;
+    private PostRepository postRepository;
 
     @Autowired
-    ModelMapper modelMapper;
+    private TagRepository tagRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @Override
     public List<PostSummaryDTO> findAllPosts() {
-        List<PostSummaryDTO> postsList = new ArrayList<>();
-
-        postsList = postRepository.findAll()
-                .stream().map(post -> modelMapper.map(post, PostSummaryDTO.class)).collect(Collectors.toList());
-
-        System.out.println(postsList);
-        return postsList;
+        return postRepository.findAll()
+                .stream()
+                .map(post -> modelMapper.map(post, PostSummaryDTO.class))
+                .collect(Collectors.toList());
     }
 
+    @Override
     public PostDTO findPostById(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("failed to find post by id"));
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("failed to find post by id"));
+
         PostDTO postDTO = modelMapper.map(post, PostDTO.class);
+        for (Tag tag : post.getTags()) {
+            postDTO.addTag(tag.getName());
+        }
         return postDTO;
     }
 
+    @Override
     public PostDTO savePost(PostDTO postRequestDTO) {
         Post post = modelMapper.map(postRequestDTO, Post.class);
 
@@ -50,12 +55,12 @@ public class PostServiceImpl implements PostService {
         post.setUpdatedAt(LocalDateTime.now());
 
         for (String tagName : postRequestDTO.getTagsList()) {
-            Tag tag = tagRepository.findByName(tagName).orElseGet(() -> new Tag(tagName));
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() -> new Tag(tagName));
             post.addTag(tag);
         }
 
         Post savedPost = postRepository.save(post);
-
         PostDTO postDTO = modelMapper.map(savedPost, PostDTO.class);
 
         for (Tag tag : savedPost.getTags()) {
@@ -64,5 +69,4 @@ public class PostServiceImpl implements PostService {
 
         return postDTO;
     }
-
 }

@@ -1,7 +1,10 @@
 package io.mountblue.blogapplication.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -38,14 +41,14 @@ public class Tag {
 //    @JsonIgnore
     private Set<Post> posts = new HashSet<>();
 
-    public void addPost(Post post){
-            posts.add(post);
-    }
-
-    public Tag(String tag){
+    public Tag(String tag) {
         setName(tag);
         setCreatedAt(LocalDateTime.now());
         setUpdatedAt(LocalDateTime.now());
+    }
+
+    public void addPost(Post post) {
+        posts.add(post);
     }
 
     @Override

@@ -2,35 +2,104 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title th:text="'Post - ' + ${post.title}"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .post-container {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .post-title {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .post-info {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .post-content,
+        .post-tags,
+        .comments {
+            margin-top: 20px;
+        }
+
+        .post-content p {
+            line-height: 1.5; /* Adjust line spacing for better readability */
+        }
+
+        .post-tags ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .post-tags li {
+            display: inline-block;
+            margin-right: 10px;
+            background-color: #eee;
+            padding: 5px 10px;
+            border-radius: 3px;
+        }
+
+        .comments {
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+
+        .comment {
+            margin-bottom: 15px;
+        }
+
+        .comment-author {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-<h1 th:text="${post.title}">Post Title</h1>
-
-<div>
-    <p><strong>Author:</strong> <span th:text="${post.author}"/></p>
-    <p><strong>Created At:</strong> <span th:text="${post.createdAt}"/></p>
+<div class="post-container">
+    <div class="post-header">
+        <h1 class="post-title" th:text="${post.title}"></h1>
+        <div class="post-info">
+            <p><strong>Author:</strong> <span th:text="${post.author}"/></p>
+            <p><strong>Created At:</strong> <span th:text="${post.createdAt}"/></p>
+        </div>
     </div>
 
-<div>
-    <h2>Content</h2>
-    <p th:text="${post.content}"/>
-</div>
+    <div class="post-content">
+        <p th:text="${post.content}"/></p>
+    </div>
 
-<div>
-    <h2>Tags</h2>
-    <ul>
-        <li th:each="tag : ${post.tagsList}" th:text="${tag}">Tag</li>
-    </ul>
-</div>
+    <div class="post-tags">
+        <h2>Tags</h2>
+        <ul>
+            <li th:each="tag : ${post.tagsList}" th:text="${tag}">Tag</li>
+        </ul>
+    </div>
 
-<div th:if="${post.comments != null}">
-    <h2>Comments</h2>
-    <ul>
-        <li th:each="comment : ${post.comments}">
-            <p><strong>Author:</strong> <span th:text="${comment.author}">Comment Author</span></p>
-            <p th:text="${comment.content}">Comment Content</p>
-        </li>
-    </ul>
+    <div th:if="${post.comments != null}" class="comments">
+        <h2>Comments</h2>
+        <ul>
+            <li th:each="comment : ${post.comments}" class="comment">
+                <p class="comment-author"><strong>Author:</strong> <span th:text="${comment.author}">Comment Author</span></p>
+                <p th:text="${comment.content}">Comment Content</p>
+            </li>
+        </ul>
+    </div>
 </div>
 </body>
 </html>

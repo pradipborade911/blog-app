@@ -6,7 +6,7 @@ import io.mountblue.blogapplication.dto.PostSummaryDTO;
 import java.util.List;
 
 public interface PostService {
-    List<PostSummaryDTO>  findAllPosts();
+    List<PostSummaryDTO> findAllPosts();
 
     PostDTO findPostById(Long id);
 

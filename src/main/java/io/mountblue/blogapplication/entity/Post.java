@@ -28,7 +28,7 @@ public class Post {
     @Column(name = "excerpt")
     private String excerpt;
 
-    @Column(name = "content" , columnDefinition = "TEXT")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "author")
@@ -57,7 +57,7 @@ public class Post {
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
 
-    public void addTag(Tag tag){
-            tags.add(tag);
+    public void addTag(Tag tag) {
+        tags.add(tag);
     }
 }
