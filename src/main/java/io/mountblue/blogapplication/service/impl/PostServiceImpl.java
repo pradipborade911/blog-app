@@ -4,6 +4,7 @@ import io.mountblue.blogapplication.dto.PostDTO;
 import io.mountblue.blogapplication.dto.PostSummaryDTO;
 import io.mountblue.blogapplication.entity.Post;
 import io.mountblue.blogapplication.entity.Tag;
+import io.mountblue.blogapplication.exception.ResourceNotFoundException;
 import io.mountblue.blogapplication.repository.PostRepository;
 import io.mountblue.blogapplication.repository.TagRepository;
 import io.mountblue.blogapplication.service.PostService;
@@ -54,6 +55,32 @@ public class PostServiceImpl implements PostService {
         post.setCreatedAt(LocalDateTime.now());
         post.setUpdatedAt(LocalDateTime.now());
 
+        for (String tagName : postRequestDTO.getTagsList()) {
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() -> new Tag(tagName));
+            post.addTag(tag);
+        }
+
+        Post savedPost = postRepository.save(post);
+        PostDTO postDTO = modelMapper.map(savedPost, PostDTO.class);
+
+        for (Tag tag : savedPost.getTags()) {
+            postDTO.addTag(tag.getName());
+        }
+
+        return postDTO;
+    }
+
+    @Override
+    public PostDTO updatePost(Long id, PostDTO postRequestDTO) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Couldn't find Post with this id"));
+
+        post.setTitle(postRequestDTO.getTitle());
+        post.setExcerpt(postRequestDTO.getExcerpt());
+        post.setContent(postRequestDTO.getContent());
+        post.setUpdatedAt(LocalDateTime.now());
+
+        post.getTags().clear();
         for (String tagName : postRequestDTO.getTagsList()) {
             Tag tag = tagRepository.findByName(tagName)
                     .orElseGet(() -> new Tag(tagName));

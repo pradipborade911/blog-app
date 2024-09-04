@@ -46,4 +46,20 @@ public class PostController {
         return "newpost";
     }
 
+    @GetMapping("/{id}/edit")
+    public String editPostbyId(@PathVariable Long id, Model model) {
+        PostDTO postDTO = postService.findPostById(id);
+        model.addAttribute("post", postDTO);
+        String tags = String.join(", ", postDTO.getTagsList());
+        model.addAttribute("tags", tags);
+        return "editpost";
+    }
+
+    @PostMapping("/{id}/update")
+    public String editPostbyId(@ModelAttribute PostDTO postRequestDTO, @PathVariable Long id, Model model) {
+        PostDTO postDTO = postService.updatePost(id, postRequestDTO);
+        model.addAttribute("post", postDTO);
+        return "post";
+    }
+
 }
