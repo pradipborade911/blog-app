@@ -96,4 +96,13 @@ public class PostServiceImpl implements PostService {
 
         return postDTO;
     }
+
+    @Override
+    public List<PostSummaryDTO> deletePostById(Long id) {
+        postRepository.deleteById(id);
+        return postRepository.findAll()
+                .stream()
+                .map(post -> modelMapper.map(post, PostSummaryDTO.class))
+                .collect(Collectors.toList());
+    }
 }

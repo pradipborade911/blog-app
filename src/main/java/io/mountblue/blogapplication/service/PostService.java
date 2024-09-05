@@ -13,4 +13,6 @@ public interface PostService {
     PostDTO savePost(PostDTO postRequestDTO);
 
     PostDTO updatePost(Long id, PostDTO postRequestDTO);
+
+    List<PostSummaryDTO> deletePostById(Long id);
 }

@@ -20,6 +20,7 @@
             border: 1px solid #ddd;
             width: calc(33% - 20px);
             box-sizing: border-box;
+            cursor: pointer;
         }
 
         .post-title {
@@ -61,6 +62,8 @@
 <h1>Post Summaries</h1>
 <div id="main">
 <div th:each="post : ${posts}" class="post-summary">
+    <form th:action="@{/{id} (id=${post.id})}" method="get" class="clickable-form">
+        <div onclick="this.closest('form').submit()">
     <h2 class="post-title" th:text="${post.title}"></h2>
     <div class="post-info">
         <span th:text="${post.author} + ', ' + ${post.publishedAt}"></span>
@@ -69,6 +72,8 @@
     <div class="post-tags">
         <span class="post-tags-info" th:each="tag : ${post.tags}" th:text="${tag.name}"></span>
     </div>
+        </div>
+    </form>
 </div>
 </div>
 </body>

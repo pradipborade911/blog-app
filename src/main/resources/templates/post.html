@@ -34,6 +34,7 @@
 
         .post-content,
         .post-tags,
+        .post-delete,
         .comments {
             margin-top: 20px;
         }
@@ -89,6 +90,12 @@
         <ul>
             <li th:each="tag : ${post.tagsList}" th:text="${tag}">Tag</li>
         </ul>
+    </div>
+
+    <div class="post-delete">
+        <form th:action="@{/{id} (id=${post.id})}" method="post">
+            <input type="submit" value="Delete Post"/>
+        </form>
     </div>
 
     <div th:if="${post.comments != null}" class="comments">
