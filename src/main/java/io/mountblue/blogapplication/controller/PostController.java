@@ -1,5 +1,6 @@
 package io.mountblue.blogapplication.controller;
 
+import io.mountblue.blogapplication.dto.CommentDTO;
 import io.mountblue.blogapplication.dto.PostDTO;
 import io.mountblue.blogapplication.dto.PostSummaryDTO;
 import io.mountblue.blogapplication.service.PostService;
@@ -63,6 +64,20 @@ public class PostController {
     public String deletePostbyId(@PathVariable Long id, Model model) {
         postService.deletePostById(id);
         return "redirect:/";
+    }
+
+    @PostMapping("/{id}/comment")
+    public String addCommentToPost(@ModelAttribute CommentDTO commentDTO, @PathVariable Long id, Model model) {
+        PostDTO postDTO = postService.addComment(commentDTO, id);
+        model.addAttribute("post", postDTO);
+        return "post";
+    }
+
+    @PostMapping("/{postId}/{commentId}/delete")
+    public String deleteComment(@PathVariable Long postId, @PathVariable Long commentId, Model model) {
+        PostDTO postDTO = postService.deleteComment(postId, commentId);
+        model.addAttribute("post", postDTO);
+        return "post";
     }
 
 }

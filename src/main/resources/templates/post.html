@@ -69,6 +69,21 @@
         .comment-author {
             font-weight: bold;
         }
+
+        .comment-form {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        .comment-form input[type="text"],
+        .comment-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
     </style>
 </head>
 <body>
@@ -102,10 +117,25 @@
         <h2>Comments</h2>
         <ul>
             <li th:each="comment : ${post.comments}" class="comment">
-                <p class="comment-author"><strong>Author:</strong> <span th:text="${comment.author}">Comment Author</span></p>
-                <p th:text="${comment.content}">Comment Content</p>
+
+                <form th:action="@{/{post_id}/{comment_id}/delete(post_id=${post.id}, comment_id=${comment.id})}" method="post">
+                <p class="comment-author"><span th:text="${comment.name}">Comment Author</span></p>
+                <p th:text="${comment.comment}">Comment Content</p>
+                    <input type="submit" value="Delete Comment"/>
+                </form>
+
             </li>
         </ul>
+    </div>
+
+    <div class="comment-form">
+        <h3>Add a Comment</h3>
+        <form th:action="@{/{id}/comment (id=${post.id})}" method="post">
+                <input type="text" name="name" placeholder="Your Name" required/>
+                <input type="email" name="email" placeholder="Email" required/>
+            <textarea name="comment" placeholder="Your Comment" required></textarea>
+            <input type="submit" value="Submit Comment"/>
+        </form>
     </div>
 </div>
 </body>
