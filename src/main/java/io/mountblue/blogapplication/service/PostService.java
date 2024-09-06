@@ -3,6 +3,7 @@ package io.mountblue.blogapplication.service;
 import io.mountblue.blogapplication.dto.CommentDTO;
 import io.mountblue.blogapplication.dto.PostDTO;
 import io.mountblue.blogapplication.dto.PostSummaryDTO;
+import io.mountblue.blogapplication.entity.Post;
 
 import java.util.List;
 
@@ -20,5 +21,13 @@ public interface PostService {
     PostDTO addComment(CommentDTO commentDTO, Long postId);
 
     PostDTO deleteComment(Long postId, Long commentId);
+
+    List<PostSummaryDTO> findAllPostsByAuthor(String author);
+
+    List<String> findAllTags();
+
+    List<PostSummaryDTO> findByAuthorsOrTags(List<String> authors, List<String> tags);
+
+    List<String> findAllAuthors();
 
 }

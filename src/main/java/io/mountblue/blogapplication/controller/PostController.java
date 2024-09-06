@@ -24,7 +24,11 @@ public class PostController {
     @GetMapping
     public String getBlogPosts(Model model) {
         List<PostSummaryDTO> posts = postService.findAllPosts();
+        List<String> authorslist = postService.findAllAuthors();
+        List<String> tagslist = postService.findAllTags();
         model.addAttribute("posts", posts);
+        model.addAttribute("authors", authorslist);
+        model.addAttribute("tags", tagslist);
         return "blog_posts";
     }
 
@@ -35,6 +39,16 @@ public class PostController {
         return "post";
     }
 
+    @PostMapping("/filter")
+    public String getFilteredPosts(@RequestParam(value = "tags", required = false) List<String> tags, @RequestParam(value = "author", required = false) List<String> authors, Model model) {
+        List<PostSummaryDTO> posts = postService.findByAuthorsOrTags(authors, tags);
+        List<String> authorslist = postService.findAllAuthors();
+        List<String> tagslist = postService.findAllTags();
+        model.addAttribute("posts", posts);
+        model.addAttribute("authors", authorslist);
+        model.addAttribute("tags", tagslist);
+        return "blog_posts";
+    }
 
     @PostMapping("/newpost")
     public String createPost(@ModelAttribute PostDTO postRequestDTO, Model model) {

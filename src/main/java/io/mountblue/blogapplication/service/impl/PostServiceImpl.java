@@ -142,4 +142,30 @@ public class PostServiceImpl implements PostService {
 
         return postDTO;
     }
+
+    @Override
+    public List<PostSummaryDTO> findAllPostsByAuthor(String author) {
+        return postRepository.findAllByAuthor(author)
+                .stream()
+                .map(post -> modelMapper.map(post, PostSummaryDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PostSummaryDTO> findByAuthorsOrTags(List<String> authors, List<String> tags) {
+        return postRepository.findByAuthorsOrTags(authors, tags)
+                .stream()
+                .map(post -> modelMapper.map(post, PostSummaryDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<String> findAllTags(){
+        return tagRepository.findAll().stream().map(tag -> tag.getName()).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> findAllAuthors() {
+        return postRepository.findAllAuthors();
+    }
+
 }

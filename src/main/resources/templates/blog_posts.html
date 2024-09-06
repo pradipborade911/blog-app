@@ -55,11 +55,95 @@
             border-radius: 5px;
             font-size: 12px;
         }
+/* Accordion Styling */
+.accordion-toggle {
+    display: none;
+}
+
+<!--.accordion-header {-->
+<!--    display: block;-->
+<!--    padding: 10px;-->
+<!--    background-color: #ddd;-->
+<!--    cursor: pointer;-->
+<!--    font-weight: bold;-->
+<!--    margin-bottom: 5px;-->
+<!--    border-radius: 5px;-->
+<!--}-->
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    padding-left: 10px;
+}
+
+/* Show the content when checkbox is checked */
+.accordion-toggle:checked + .accordion-header + .accordion-content {
+    max-height: 500px; /* Adjust as needed for your content */
+    transition: max-height 0.5s ease-in;
+}
+
+                .container {
+            padding: 20px;
+            margin-top: 5px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
     </style>
 </head>
 <body>
-<h1>Post Summaries</h1>
+<div class="header">
+    <h1>My Blog Application</h1>
+    <div class="header-right">
+        <div class="filter-container">
+            <div class="options">
+
+            <!-- Filter by Category 1 -->
+            <input type="checkbox" id="filter-category1" class="accordion-toggle" />
+            <label for="filter-category1" class="accordion-header">Filter by Category 1</label>
+            <div class="accordion-content">
+                <form th:action="@{/filter}" method="post">
+                    <div th:each="tag : ${tags}">
+                        <input type="checkbox" name="tags" th:value="${tag}" /> <span th:text="${tag}"></span>
+                    </div>
+            </div>
+
+            <!-- Filter by Category 2 -->
+            <input type="checkbox" id="filter-category2" class="accordion-toggle" />
+            <label for="filter-category2" class="accordion-header">Filter by Category 2</label>
+            <div class="accordion-content">
+                    <div th:each="author : ${authors}">
+                        <input type="checkbox" name="author" th:value="${author}" /> <span th:text="${author}"></span>
+                    </div>
+            </div>
+            <button type="submit">Submit</button>
+            </form>
+        </div>
+
+        <div class="search-login">
+            <input class="search-bar" type="text" placeholder="Search" />
+            <a href="/login">Login</a>
+        </div>
+            <a class="button" href="/newpost">New Post</a>
+        </div>
+    </div>
+</div>
 <div id="main">
 <div th:each="post : ${posts}" class="post-summary">
     <form th:action="@{/{id} (id=${post.id})}" method="get" class="clickable-form">
