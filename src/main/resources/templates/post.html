@@ -108,31 +108,42 @@
     </div>
 
     <div class="post-delete">
-        <form th:action="@{/{id} (id=${post.id})}" method="post">
+        <form method="post" th:action="@{/{id} (id=${post.id})}">
             <input type="submit" value="Delete Post"/>
         </form>
     </div>
 
-    <div th:if="${post.comments != null}" class="comments">
+    <div class="comments" th:if="${post.comments != null}">
         <h2>Comments</h2>
         <ul>
-            <li th:each="comment : ${post.comments}" class="comment">
+            <li class="comment" th:each="comment : ${post.comments}">
+                <div class="comment-form">
+                    <div id="comment-data-${comment.id}">
+                        <p class="comment-author">
+                            <span th:text="${comment.name}">Comment Author</span>
+                        </p>
+                        <p th:text="${comment.comment}">Comment Content</p>
 
-                <form th:action="@{/{post_id}/{comment_id}/delete(post_id=${post.id}, comment_id=${comment.id})}" method="post">
-                <p class="comment-author"><span th:text="${comment.name}">Comment Author</span></p>
-                <p th:text="${comment.comment}">Comment Content</p>
-                    <input type="submit" value="Delete Comment"/>
-                </form>
+                        <form th:action="@{/{post_id}/{comment_id}/edit(post_id=${post.id}, comment_id=${comment.id})}">
+                            <input type="submit" value="Edit Post"/>
+                        </form>
 
+                        <form method="post"
+                              th:action="@{/{post_id}/{comment_id}/delete(post_id=${post.id}, comment_id=${comment.id})}">
+                            <input type="submit" value="Delete Comment"/>
+                        </form>
+                    </div>
+
+                </div>
             </li>
         </ul>
     </div>
 
     <div class="comment-form">
         <h3>Add a Comment</h3>
-        <form th:action="@{/{id}/comment (id=${post.id})}" method="post">
-                <input type="text" name="name" placeholder="Your Name" required/>
-                <input type="email" name="email" placeholder="Email" required/>
+        <form method="post" th:action="@{/{id}/comment (id=${post.id})}">
+            <input name="name" placeholder="Your Name" required type="text"/>
+            <input name="email" placeholder="Email" required type="email"/>
             <textarea name="comment" placeholder="Your Comment" required></textarea>
             <input type="submit" value="Submit Comment"/>
         </form>

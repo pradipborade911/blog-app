@@ -3,6 +3,7 @@ package io.mountblue.blogapplication.controller;
 import io.mountblue.blogapplication.dto.CommentDTO;
 import io.mountblue.blogapplication.dto.PostDTO;
 import io.mountblue.blogapplication.dto.PostSummaryDTO;
+import io.mountblue.blogapplication.service.CommentService;
 import io.mountblue.blogapplication.service.PostService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,9 @@ import java.util.List;
 public class PostController {
     @Autowired
     PostService postService;
+
+    @Autowired
+    CommentService commentService;
 
     @GetMapping
     public String getBlogPosts(Model model) {
@@ -56,8 +60,7 @@ public class PostController {
     @PostMapping("/{id}/update")
     public String editPostbyId(@ModelAttribute PostDTO postRequestDTO, @PathVariable Long id, Model model) {
         PostDTO postDTO = postService.updatePost(id, postRequestDTO);
-        model.addAttribute("post", postDTO);
-        return "post";
+        return "redirect/" + postDTO.getId();
     }
 
     @PostMapping("/{id}")
@@ -76,8 +79,14 @@ public class PostController {
     @PostMapping("/{postId}/{commentId}/delete")
     public String deleteComment(@PathVariable Long postId, @PathVariable Long commentId, Model model) {
         PostDTO postDTO = postService.deleteComment(postId, commentId);
-        model.addAttribute("post", postDTO);
-        return "post";
+        return "redirect:/" + postDTO.getId();
+    }
+
+    @GetMapping("/{postId}/{commentId}/edit")
+    public String editComment(@PathVariable Long postId, @PathVariable Long commentId, Model model) {
+        CommentDTO commentDTO = commentService.getCommentById(commentId);
+        model.addAttribute("comment", commentDTO);
+        return "editcomment";
     }
 
 }
