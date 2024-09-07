@@ -1,6 +1,8 @@
 package io.mountblue.blogapplication.repository;
 
 import io.mountblue.blogapplication.entity.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +16,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<Post> findById(Long aLong);
 
     @Override
-    List<Post> findAll();
+    Page<Post> findAll(Pageable pageable);
 
     List<Post>  findAllByAuthor(String author);
 
@@ -25,6 +27,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT DISTINCT post FROM Post post LEFT JOIN post.tags tags " +
             "WHERE post.author IN :authors OR tags.name IN :tags")
-    List<Post> findByAuthorsOrTags(@Param("authors") List<String> authors, @Param("tags") List<String> tags);
+    Page<Post> findByAuthorsOrTags(@Param("authors") List<String> authors, @Param("tags") List<String> tags, Pageable pageable);
+
+
+
 
 }

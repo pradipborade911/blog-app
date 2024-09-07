@@ -7,6 +7,7 @@ import io.mountblue.blogapplication.service.CommentService;
 import io.mountblue.blogapplication.service.PostService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,33 +23,54 @@ public class PostController {
     CommentService commentService;
 
     @GetMapping
-    public String getBlogPosts(Model model) {
-        List<PostSummaryDTO> posts = postService.findAllPosts();
-        List<String> authorslist = postService.findAllAuthors();
-        List<String> tagslist = postService.findAllTags();
+    public String getBlogPosts(
+            @RequestParam(value = "page_number", defaultValue = "0") int pageNumber,
+            @RequestParam(value = "page_size", defaultValue = "2") int pageSize,
+            Model model) {
+        Page<PostSummaryDTO> postsPage = postService.findPaginatedPosts(pageNumber, pageSize);
+        List<PostSummaryDTO> posts = postsPage.getContent();
+
         model.addAttribute("posts", posts);
-        model.addAttribute("authors", authorslist);
-        model.addAttribute("tags", tagslist);
+        model.addAttribute("authors", postService.findAllAuthors());
+        model.addAttribute("tags", postService.findAllTags());
+        model.addAttribute("totalPages", postsPage.getTotalPages());
+        model.addAttribute("currentPage", pageNumber);
+
         return "blog_posts";
     }
 
+
     @GetMapping("/{id}")
-    public String getPostbyId(@PathVariable Long id, Model model) {
+    public String getPostById(@PathVariable Long id, Model model) {
         PostDTO postDTO = postService.findPostById(id);
         model.addAttribute("post", postDTO);
         return "post";
     }
 
-    @PostMapping("/filter")
-    public String getFilteredPosts(@RequestParam(value = "tags", required = false) List<String> tags, @RequestParam(value = "author", required = false) List<String> authors, Model model) {
-        List<PostSummaryDTO> posts = postService.findByAuthorsOrTags(authors, tags);
+    @GetMapping("/filter")
+    public String getFilteredPosts(
+            @RequestParam(value = "page_number", defaultValue = "0") int pageNumber,
+            @RequestParam(value = "page_size", defaultValue = "2") int pageSize,
+            @RequestParam(value = "tags", required = false) List<String> tags,
+            @RequestParam(value = "authors", required = false) List<String> authors,
+            Model model) {
+        Page<PostSummaryDTO> postsPage = postService.findByAuthorsOrTags(authors, tags, pageNumber, pageSize);
+
         List<String> authorslist = postService.findAllAuthors();
         List<String> tagslist = postService.findAllTags();
+        List<PostSummaryDTO> posts = postsPage.getContent();
+
         model.addAttribute("posts", posts);
         model.addAttribute("authors", authorslist);
         model.addAttribute("tags", tagslist);
+        model.addAttribute("totalPages", postsPage.getTotalPages());
+        model.addAttribute("currentPage", pageNumber);
+        model.addAttribute("selectedTags", tags);
+        model.addAttribute("selectedAuthors", authors);
+
         return "blog_posts";
     }
+
 
     @PostMapping("/newpost")
     public String createPost(@ModelAttribute PostDTO postRequestDTO, Model model) {
@@ -57,13 +79,14 @@ public class PostController {
         return "post";
     }
 
+
     @GetMapping("/newpost")
     public String createPost() {
         return "newpost";
     }
 
     @GetMapping("/{id}/edit")
-    public String editPostbyId(@PathVariable Long id, Model model) {
+    public String editPostById(@PathVariable Long id, Model model) {
         PostDTO postDTO = postService.findPostById(id);
         model.addAttribute("post", postDTO);
         String tags = String.join(", ", postDTO.getTagsList());
@@ -72,13 +95,13 @@ public class PostController {
     }
 
     @PostMapping("/{id}/update")
-    public String editPostbyId(@ModelAttribute PostDTO postRequestDTO, @PathVariable Long id, Model model) {
+    public String editPostById(@ModelAttribute PostDTO postRequestDTO, @PathVariable Long id, Model model) {
         PostDTO postDTO = postService.updatePost(id, postRequestDTO);
-        return "redirect/" + postDTO.getId();
+        return "redirect:/" + postDTO.getId();
     }
 
     @PostMapping("/{id}")
-    public String deletePostbyId(@PathVariable Long id, Model model) {
+    public String deletePostById(@PathVariable Long id, Model model) {
         postService.deletePostById(id);
         return "redirect:/";
     }
@@ -91,7 +114,7 @@ public class PostController {
     }
 
     @PostMapping("/{postId}/{commentId}/delete")
-    public String deleteComment(@PathVariable Long postId, @PathVariable Long commentId, Model model) {
+    public String deleteComment(@PathVariable Long postId, @PathVariable Long commentId) {
         PostDTO postDTO = postService.deleteComment(postId, commentId);
         return "redirect:/" + postDTO.getId();
     }

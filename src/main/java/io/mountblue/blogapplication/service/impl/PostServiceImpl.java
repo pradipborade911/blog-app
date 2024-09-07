@@ -13,6 +13,9 @@ import io.mountblue.blogapplication.service.PostService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -152,13 +155,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostSummaryDTO> findByAuthorsOrTags(List<String> authors, List<String> tags) {
-        return postRepository.findByAuthorsOrTags(authors, tags)
-                .stream()
-                .map(post -> modelMapper.map(post, PostSummaryDTO.class))
-                .collect(Collectors.toList());
+    public Page<PostSummaryDTO> findByAuthorsOrTags(List<String> authors, List<String> tags, int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Post> paginatedPosts = postRepository.findByAuthorsOrTags(authors, tags, pageable);
+        return paginatedPosts.map(post -> modelMapper.map(post, PostSummaryDTO.class));
     }
 
+    @Override
     public List<String> findAllTags(){
         return tagRepository.findAll().stream().map(tag -> tag.getName()).collect(Collectors.toList());
     }
@@ -166,6 +169,13 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<String> findAllAuthors() {
         return postRepository.findAllAuthors();
+    }
+
+    @Override
+    public Page<PostSummaryDTO> findPaginatedPosts(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Post> paginatedPosts = postRepository.findAll(pageable);
+        return paginatedPosts.map(post -> modelMapper.map(post, PostSummaryDTO.class));
     }
 
 }

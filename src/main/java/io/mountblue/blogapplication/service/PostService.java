@@ -3,7 +3,7 @@ package io.mountblue.blogapplication.service;
 import io.mountblue.blogapplication.dto.CommentDTO;
 import io.mountblue.blogapplication.dto.PostDTO;
 import io.mountblue.blogapplication.dto.PostSummaryDTO;
-import io.mountblue.blogapplication.entity.Post;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -26,8 +26,9 @@ public interface PostService {
 
     List<String> findAllTags();
 
-    List<PostSummaryDTO> findByAuthorsOrTags(List<String> authors, List<String> tags);
+    Page<PostSummaryDTO> findByAuthorsOrTags(List<String> authors, List<String> tags, int pageNumber, int pageSize);
 
     List<String> findAllAuthors();
 
+    Page<PostSummaryDTO> findPaginatedPosts(int pageNumber, int pageSize);
 }

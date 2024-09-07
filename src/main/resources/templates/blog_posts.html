@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Post Summaries</title>
-    <style>
 
-        body{
+<head>
+    <title>Blog Application</title>
+    <style>
+        body {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
 
-        #main {
+        .posts {
             display: flex;
             flex-wrap: wrap;
         }
@@ -55,35 +55,38 @@
             border-radius: 5px;
             font-size: 12px;
         }
-/* Accordion Styling */
-.accordion-toggle {
-    display: none;
-}
 
-<!--.accordion-header {-->
-<!--    display: block;-->
-<!--    padding: 10px;-->
-<!--    background-color: #ddd;-->
-<!--    cursor: pointer;-->
-<!--    font-weight: bold;-->
-<!--    margin-bottom: 5px;-->
-<!--    border-radius: 5px;-->
-<!--}-->
+        .accordion-toggle {
+            display: none;
+        }
 
-.accordion-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.2s ease-out;
-    padding-left: 10px;
-}
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+        }
 
-/* Show the content when checkbox is checked */
-.accordion-toggle:checked + .accordion-header + .accordion-content {
-    max-height: 500px; /* Adjust as needed for your content */
-    transition: max-height 0.5s ease-in;
-}
+        #select-tags:checked~.accordion-content,
+        #select-author:checked~.accordion-content {
+            background-color: white;
+            border: 1px solid #ddd;
+            width: 200px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
 
-                .container {
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .accordion-toggle:checked+.accordion-header+.accordion-content {
+            max-height: 500px;
+            overflow-y: auto;
+            position: absolute;
+            margin: auto 20px auto 20px;
+        }
+
+        .container {
             padding: 20px;
             margin-top: 5px;
         }
@@ -105,60 +108,113 @@
             gap: 10px;
         }
 
+        .options {
+            display: flex;
+            gap: 10px;
+        }
     </style>
 </head>
+
 <body>
-<div class="header">
-    <h1>My Blog Application</h1>
-    <div class="header-right">
-        <div class="filter-container">
-            <div class="options">
-
-            <!-- Filter by Category 1 -->
-            <input type="checkbox" id="filter-category1" class="accordion-toggle" />
-            <label for="filter-category1" class="accordion-header">Filter by Category 1</label>
-            <div class="accordion-content">
-                <form th:action="@{/filter}" method="post">
-                    <div th:each="tag : ${tags}">
-                        <input type="checkbox" name="tags" th:value="${tag}" /> <span th:text="${tag}"></span>
-                    </div>
+    <div class="header">
+        <h1>Blog Application</h1>
+        <div class="header-right">
+            <div class="search-login">
+                <input class="search-bar" placeholder="Search" type="text" />
+                <a href="/login">Login</a>
             </div>
 
-            <!-- Filter by Category 2 -->
-            <input type="checkbox" id="filter-category2" class="accordion-toggle" />
-            <label for="filter-category2" class="accordion-header">Filter by Category 2</label>
-            <div class="accordion-content">
-                    <div th:each="author : ${authors}">
-                        <input type="checkbox" name="author" th:value="${author}" /> <span th:text="${author}"></span>
+
+            <form class="options" method="get" th:action="@{/filter}">
+                <div id="select-tags-section">
+                    <input class="accordion-toggle" id="select-tags" type="checkbox" />
+                    <label class="accordion-header" for="select-tags">Select Tags</label>
+                    <div class="accordion-content">
+                        <div th:each="tag : ${tags}">
+                            <input name="tags" th:value="${tag}" type="checkbox"
+                                th:checked="${selectedTags != null and selectedTags.contains(tag)}" />
+                            <span th:text="${tag}"></span>
+                        </div>
                     </div>
-            </div>
-            <button type="submit">Submit</button>
+                </div>
+
+                <div id="select-author-section">
+                    <input class="accordion-toggle" id="select-author" type="checkbox" />
+                    <label class="accordion-header" for="select-author">Select Authors</label>
+                    <div class="accordion-content">
+                        <div th:each="author : ${authors}">
+                            <input name="authors" th:value="${author}" type="checkbox"
+                                th:checked="${selectedAuthors != null and selectedAuthors.contains(author)}" />
+                            <span th:text="${author}"></span>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="posts">
+        <div class="post-summary" th:each="post : ${posts}">
+            <form class="clickable-form" method="get" th:action="@{/{id} (id=${post.id})}">
+                <div onclick="this.closest('form').submit()">
+                    <h2 class="post-title" th:text="${post.title}"></h2>
+                    <div class="post-info">
+                        <span th:text="${post.author} + ', ' + ${post.publishedAt}"></span>
+                    </div>
+                    <p class="post-info" th:text="${post.excerpt}"></p>
+                    <div class="post-tags">
+                        <span class="post-tags-info" th:each="tag : ${post.tags}" th:text="${tag.name}"></span>
+                    </div>
+                </div>
             </form>
         </div>
+    </div>
 
-        <div class="search-login">
-            <input class="search-bar" type="text" placeholder="Search" />
-            <a href="/login">Login</a>
+    <!-- Pagination controls -->
+    <div id="pagination">
+        <div>
+            <div>
+                <!-- Pagination with Forms -->
+                <div
+                    th:if="${selectedTags != null and !selectedTags.isEmpty() or selectedAuthors != null and !selectedAuthors.isEmpty()}">
+                    <form th:action="@{/filter}" method="get">
+                        <input type="hidden" name="page_number" th:value="${currentPage - 1}" />
+                        <input type="hidden" name="page_size" th:value="2" />
+                        <div th:each="tag : ${selectedTags}">
+                            <input type="hidden" name="tags" th:value="${tag}" />
+                        </div>
+                        <div th:each="author : ${selectedAuthors}">
+                            <input type="hidden" name="authors" th:value="${author}" />
+                        </div>
+                        <button type="submit" th:if="${currentPage > 0}">Previous</button>
+                    </form>
+                    <form th:action="@{/filter}" method="get">
+                        <input type="hidden" name="page_number" th:value="${currentPage + 1}" />
+                        <input type="hidden" name="page_size" th:value="2" />
+                        <div th:each="tag : ${selectedTags}">
+                            <input type="hidden" name="tags" th:value="${tag}" />
+                        </div>
+                        <div th:each="author : ${selectedAuthors}">
+                            <input type="hidden" name="authors" th:value="${author}" />
+                        </div>
+                        <button type="submit" th:if="${currentPage < totalPages - 1}">Next</button>
+                    </form>
+                </div>
+
+                <!-- Pagination with Links -->
+                <div
+                    th:if="${(selectedTags == null or selectedTags.isEmpty()) and (selectedAuthors == null or selectedAuthors.isEmpty())}">
+                    <a th:if="${currentPage > 0}"
+                        th:href="@{/(page_number=${currentPage - 1}, page_size=2)}">Previous</a>
+                    <a th:if="${currentPage < totalPages - 1}"
+                        th:href="@{/(page_number=${currentPage + 1}, page_size=2)}">Next</a>
+                </div>
+            </div>
+
         </div>
-            <a class="button" href="/newpost">New Post</a>
-        </div>
-    </div>
-</div>
-<div id="main">
-<div th:each="post : ${posts}" class="post-summary">
-    <form th:action="@{/{id} (id=${post.id})}" method="get" class="clickable-form">
-        <div onclick="this.closest('form').submit()">
-    <h2 class="post-title" th:text="${post.title}"></h2>
-    <div class="post-info">
-        <span th:text="${post.author} + ', ' + ${post.publishedAt}"></span>
-    </div>
-    <p class="post-info" th:text="${post.excerpt}"></p>
-    <div class="post-tags">
-        <span class="post-tags-info" th:each="tag : ${post.tags}" th:text="${tag.name}"></span>
-    </div>
-        </div>
-    </form>
-</div>
-</div>
+
 </body>
+
 </html>
