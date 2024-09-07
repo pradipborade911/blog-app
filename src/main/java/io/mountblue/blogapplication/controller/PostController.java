@@ -26,8 +26,9 @@ public class PostController {
     public String getBlogPosts(
             @RequestParam(value = "page_number", defaultValue = "0") int pageNumber,
             @RequestParam(value = "page_size", defaultValue = "2") int pageSize,
+            @RequestParam(value = "order", defaultValue = "latest") String order,
             Model model) {
-        Page<PostSummaryDTO> postsPage = postService.findPaginatedPosts(pageNumber, pageSize);
+        Page<PostSummaryDTO> postsPage = postService.findPaginatedPosts(pageNumber, pageSize, order);
         List<PostSummaryDTO> posts = postsPage.getContent();
 
         model.addAttribute("posts", posts);
@@ -53,11 +54,17 @@ public class PostController {
             @RequestParam(value = "page_size", defaultValue = "2") int pageSize,
             @RequestParam(value = "tags", required = false) List<String> tags,
             @RequestParam(value = "authors", required = false) List<String> authors,
+            @RequestParam(value = "order", defaultValue = "latest") String order,
             Model model) {
-        Page<PostSummaryDTO> postsPage = postService.findByAuthorsOrTags(authors, tags, pageNumber, pageSize);
-
         List<String> authorslist = postService.findAllAuthors();
         List<String> tagslist = postService.findAllTags();
+
+        if ((authors == null || authors.isEmpty()) && (tags == null || tags.isEmpty())) {
+            authors = authorslist;
+            tags = tagslist;
+        }
+
+        Page<PostSummaryDTO> postsPage = postService.findByAuthorsOrTags(authors, tags, pageNumber, pageSize, order);
         List<PostSummaryDTO> posts = postsPage.getContent();
 
         model.addAttribute("posts", posts);
@@ -67,6 +74,31 @@ public class PostController {
         model.addAttribute("currentPage", pageNumber);
         model.addAttribute("selectedTags", tags);
         model.addAttribute("selectedAuthors", authors);
+        model.addAttribute("order", order);
+
+        return "blog_posts";
+    }
+
+    @GetMapping("/search")
+    public String searchPosts(
+            @RequestParam(value = "page_number", defaultValue = "0") int pageNumber,
+            @RequestParam(value = "page_size", defaultValue = "2") int pageSize,
+            @RequestParam(value = "order", defaultValue = "latest") String order,
+            @RequestParam(value = "search-query") String searchQuery,
+            Model model) {
+        List<String> authorslist = postService.findAllAuthors();
+        List<String> tagslist = postService.findAllTags();
+
+        Page<PostSummaryDTO> postsPage = postService.searchPaginatedPosts(searchQuery, pageNumber, pageSize, order);
+        List<PostSummaryDTO> posts = postsPage.getContent();
+
+        model.addAttribute("posts", posts);
+        model.addAttribute("authors", authorslist);
+        model.addAttribute("tags", tagslist);
+        model.addAttribute("totalPages", postsPage.getTotalPages());
+        model.addAttribute("currentPage", pageNumber);
+        model.addAttribute("order", order);
+        model.addAttribute("search_query", searchQuery);
 
         return "blog_posts";
     }

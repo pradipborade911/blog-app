@@ -118,14 +118,23 @@
 <body>
     <div class="header">
         <h1>Blog Application</h1>
-        <div class="header-right">
-            <div class="search-login">
-                <input class="search-bar" placeholder="Search" type="text" />
-                <a href="/login">Login</a>
-            </div>
+        <div class="options">
+            <a th:href="@{/newpost}">New Post</a>
+            <form class="options" method="get">
+                <div>
+                    <select id="sort" name="order">
+                        <option value="latest" th:selected="${order == 'latest'}">Latest</option>
+                        <option value="oldest" th:selected="${order == 'oldest'}">Oldest</option>
+                    </select>
+                </div>
+
+                <div class="search-login">
+                    <input class="search-bar" name="search-query" th:value="${search_query}" placeholder="Search"
+                        type="text" />
+                </div>
+                <button type="submit" th:formaction="@{/search}">Search</button>
 
 
-            <form class="options" method="get" th:action="@{/filter}">
                 <div id="select-tags-section">
                     <input class="accordion-toggle" id="select-tags" type="checkbox" />
                     <label class="accordion-header" for="select-tags">Select Tags</label>
@@ -149,9 +158,12 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit">Submit</button>
+                <button type="submit" th:formaction="@{/filter}">Filter</button>
             </form>
 
+            <div>
+                <a href="/login">Login</a>
+            </div>
         </div>
     </div>
 
@@ -161,7 +173,7 @@
                 <div onclick="this.closest('form').submit()">
                     <h2 class="post-title" th:text="${post.title}"></h2>
                     <div class="post-info">
-                        <span th:text="${post.author} + ', ' + ${post.publishedAt}"></span>
+                        <span th:text="${post.author} + ', ' + ${post.createdAt}"></span>
                     </div>
                     <p class="post-info" th:text="${post.excerpt}"></p>
                     <div class="post-tags">
@@ -176,7 +188,27 @@
     <div id="pagination">
         <div>
             <div>
-                <!-- Pagination with Forms -->
+                <!-- Pagination for search -->
+                <div th:if="${search_query != null and !search_query.isEmpty()}">
+                    <form th:action="@{/search}" method="get">
+                        <input type="hidden" name="page_number" th:value="${currentPage - 1}" />
+                        <input type="hidden" name="page_size" th:value="2" />
+                        <input type="hidden" name="search-query" th:value="${search_query}" />
+                        <input type="hidden" name="order" th:value="${order}" />
+                        <button type="submit" th:if="${currentPage > 0}">Previous</button>
+                    </form>
+
+                    <form th:action="@{/search}" method="get">
+                        <input type="hidden" name="page_number" th:value="${currentPage + 1}" />
+                        <input type="hidden" name="page_size" th:value="2" />
+                        <input type="hidden" name="search-query" th:value="${search_query}" />
+                        <input type="hidden" name="order" th:value="${order}" />
+                        <button type="submit" th:if="${currentPage < totalPages - 1}">Next</button>
+                    </form>
+
+                </div>
+
+                <!-- Pagination for filter -->
                 <div
                     th:if="${selectedTags != null and !selectedTags.isEmpty() or selectedAuthors != null and !selectedAuthors.isEmpty()}">
                     <form th:action="@{/filter}" method="get">
@@ -188,7 +220,8 @@
                         <div th:each="author : ${selectedAuthors}">
                             <input type="hidden" name="authors" th:value="${author}" />
                         </div>
-                        <button type="submit" th:if="${currentPage > 0}">Previous</button>
+                        <input type="hidden" name="order" th:value="${order}" />
+                        <button type="submit" th:if="${currentPage > 0}">PREVIOUS</button>
                     </form>
                     <form th:action="@{/filter}" method="get">
                         <input type="hidden" name="page_number" th:value="${currentPage + 1}" />
@@ -199,13 +232,14 @@
                         <div th:each="author : ${selectedAuthors}">
                             <input type="hidden" name="authors" th:value="${author}" />
                         </div>
-                        <button type="submit" th:if="${currentPage < totalPages - 1}">Next</button>
+                        <input type="hidden" name="order" th:value="${order}" />
+                        <button type="submit" th:if="${currentPage < totalPages - 1}">NEXT</button>
                     </form>
                 </div>
 
-                <!-- Pagination with Links -->
+                <!-- Default Pagination -->
                 <div
-                    th:if="${(selectedTags == null or selectedTags.isEmpty()) and (selectedAuthors == null or selectedAuthors.isEmpty())}">
+                    th:if="${(selectedTags == null or selectedTags.isEmpty()) and (selectedAuthors == null or selectedAuthors.isEmpty()) and (search_query == null or search_query.isEmpty())}">
                     <a th:if="${currentPage > 0}"
                         th:href="@{/(page_number=${currentPage - 1}, page_size=2)}">Previous</a>
                     <a th:if="${currentPage < totalPages - 1}"
@@ -214,6 +248,7 @@
             </div>
 
         </div>
+    </div>
 
 </body>
 

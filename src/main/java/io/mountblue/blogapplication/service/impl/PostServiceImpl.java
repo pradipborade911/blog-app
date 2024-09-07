@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -155,8 +156,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<PostSummaryDTO> findByAuthorsOrTags(List<String> authors, List<String> tags, int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+    public Page<PostSummaryDTO> findByAuthorsOrTags(List<String> authors, List<String> tags, int pageNumber, int pageSize, String order) {
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(order.equals("latest")?Sort.Direction.DESC:Sort.Direction.ASC, "createdAt"));
         Page<Post> paginatedPosts = postRepository.findByAuthorsOrTags(authors, tags, pageable);
         return paginatedPosts.map(post -> modelMapper.map(post, PostSummaryDTO.class));
     }
@@ -172,9 +174,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<PostSummaryDTO> findPaginatedPosts(int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+    public Page<PostSummaryDTO> findPaginatedPosts(int pageNumber, int pageSize, String order) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(order.equals("latest")?Sort.Direction.DESC:Sort.Direction.ASC, "createdAt"));
         Page<Post> paginatedPosts = postRepository.findAll(pageable);
+        return paginatedPosts.map(post -> modelMapper.map(post, PostSummaryDTO.class));
+    }
+
+    @Override
+    public Page<PostSummaryDTO> searchPaginatedPosts(String searchQuery, int pageNumber, int pageSize, String order) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(order.equals("latest")?Sort.Direction.DESC:Sort.Direction.ASC, "createdAt"));
+        Page<Post> paginatedPosts = postRepository.searchPosts(searchQuery, pageable);
         return paginatedPosts.map(post -> modelMapper.map(post, PostSummaryDTO.class));
     }
 

@@ -29,7 +29,15 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "WHERE post.author IN :authors OR tags.name IN :tags")
     Page<Post> findByAuthorsOrTags(@Param("authors") List<String> authors, @Param("tags") List<String> tags, Pageable pageable);
 
-
+    @Query("SELECT DISTINCT p FROM Post p " +
+            "LEFT JOIN p.tags t " +
+            "WHERE (:query IS NULL OR :query = '' " +
+            "OR LOWER(p.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(p.excerpt) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(p.content) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(p.author) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(t.name) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Post> searchPosts(@Param("query") String query, Pageable pageable);
 
 
 }

@@ -20,5 +20,7 @@ public class PostSummaryDTO {
 
     private LocalDateTime publishedAt;
 
+    private LocalDateTime createdAt;
+
     private Set<TagDTO> tags;
 }
