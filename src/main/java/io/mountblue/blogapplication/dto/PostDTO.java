@@ -22,9 +22,11 @@ public class PostDTO {
 
     private LocalDateTime updatedAt;
 
+    private LocalDateTime  publishedAt;
+
     private String excerpt;
 
-    private String author = "Default User";
+    private String author = "Sachin Sharma";
 
     private List<String> tagsList = new ArrayList<>();
 

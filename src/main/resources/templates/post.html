@@ -87,12 +87,20 @@
     </style>
 </head>
 <body>
-<div class="post-container">
+    <div class="header">
+        <form th:action="@{/}" id="blogForm">
+            <h1 onclick="document.getElementById('blogForm').submit();" style="cursor: pointer;">
+                Blog Application
+            </h1>
+        </form>
+    </div>
+    
+    <div class="post-container">
     <div class="post-header">
         <h1 class="post-title" th:text="${post.title}"></h1>
         <div class="post-info">
             <p><strong>Author:</strong> <span th:text="${post.author}"/></p>
-            <p><strong>Created At:</strong> <span th:text="${post.createdAt}"/></p>
+            <p><strong>Published At:</strong> <span th:text="${post.publishedAt}"/></p>
         </div>
     </div>
 
@@ -105,6 +113,12 @@
         <ul>
             <li th:each="tag : ${post.tagsList}" th:text="${tag}">Tag</li>
         </ul>
+    </div>
+
+    <div class="post-delete">
+        <form method="get" th:action="@{/{id}/edit (id=${post.id})}">
+            <input type="submit" value="Edit Post"/>
+        </form>
     </div>
 
     <div class="post-delete">

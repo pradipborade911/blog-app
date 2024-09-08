@@ -2,6 +2,7 @@ package io.mountblue.blogapplication.controller;
 
 import io.mountblue.blogapplication.dto.CommentDTO;
 import io.mountblue.blogapplication.dto.PostDTO;
+import io.mountblue.blogapplication.dto.PostFilterDTO;
 import io.mountblue.blogapplication.dto.PostSummaryDTO;
 import io.mountblue.blogapplication.service.CommentService;
 import io.mountblue.blogapplication.service.PostService;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -36,6 +38,7 @@ public class PostController {
         model.addAttribute("tags", postService.findAllTags());
         model.addAttribute("totalPages", postsPage.getTotalPages());
         model.addAttribute("currentPage", pageNumber);
+        model.addAttribute("order", order);
 
         return "blog_posts";
     }
@@ -49,7 +52,7 @@ public class PostController {
     }
 
     @GetMapping("/filter")
-    public String getFilteredPosts(
+    public String getFilteredPosts(@ModelAttribute PostFilterDTO filterDTO,
             @RequestParam(value = "page_number", defaultValue = "0") int pageNumber,
             @RequestParam(value = "page_size", defaultValue = "2") int pageSize,
             @RequestParam(value = "tags", required = false) List<String> tags,
@@ -59,22 +62,22 @@ public class PostController {
         List<String> authorslist = postService.findAllAuthors();
         List<String> tagslist = postService.findAllTags();
 
-        if ((authors == null || authors.isEmpty()) && (tags == null || tags.isEmpty())) {
-            authors = authorslist;
-            tags = tagslist;
+        if (filterDTO.getDate() == null && (filterDTO.getAuthors() == null || filterDTO.getAuthors().isEmpty()) && (filterDTO.getTags() == null || filterDTO.getTags().isEmpty())) {
+            filterDTO.setAuthors(authorslist);
+            filterDTO.setTags(tagslist);
         }
 
-        Page<PostSummaryDTO> postsPage = postService.findByAuthorsOrTags(authors, tags, pageNumber, pageSize, order);
+        Page<PostSummaryDTO> postsPage = postService.findByAuthorsOrTagsSpec(filterDTO.getAuthors(), filterDTO.getTags(), filterDTO.getPageNumber(), filterDTO.getPageSize(), filterDTO.getOrder());
         List<PostSummaryDTO> posts = postsPage.getContent();
 
         model.addAttribute("posts", posts);
         model.addAttribute("authors", authorslist);
         model.addAttribute("tags", tagslist);
         model.addAttribute("totalPages", postsPage.getTotalPages());
-        model.addAttribute("currentPage", pageNumber);
-        model.addAttribute("selectedTags", tags);
-        model.addAttribute("selectedAuthors", authors);
-        model.addAttribute("order", order);
+        model.addAttribute("currentPage", filterDTO.getPageNumber());
+        model.addAttribute("selectedTags", filterDTO.getTags());
+        model.addAttribute("selectedAuthors", filterDTO.getAuthors());
+        model.addAttribute("order", filterDTO.getOrder());
 
         return "blog_posts";
     }

@@ -33,4 +33,6 @@ public interface PostService {
     Page<PostSummaryDTO> findPaginatedPosts(int pageNumber, int pageSize, String order);
 
     Page<PostSummaryDTO> searchPaginatedPosts(String searchQuery, int pageNumber, int pageSize, String order);
+
+    Page<PostSummaryDTO> findByAuthorsOrTagsSpec(List<String> authors, List<String> tags, int pageNumber, int pageSize, String sort);
 }

@@ -10,6 +10,7 @@ import io.mountblue.blogapplication.exception.ResourceNotFoundException;
 import io.mountblue.blogapplication.repository.PostRepository;
 import io.mountblue.blogapplication.repository.TagRepository;
 import io.mountblue.blogapplication.service.PostService;
+import io.mountblue.blogapplication.specification.PostSpecification;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +29,6 @@ import java.util.stream.Collectors;
 @Transactional
 @Service
 public class PostServiceImpl implements PostService {
-
     @Autowired
     private PostRepository postRepository;
 
@@ -62,6 +64,8 @@ public class PostServiceImpl implements PostService {
 
         post.setCreatedAt(LocalDateTime.now());
         post.setUpdatedAt(LocalDateTime.now());
+        post.setPublishedAt(LocalDateTime.now());
+        post.setPublished(true);
 
         for (String tagName : postRequestDTO.getTagsList()) {
             Tag tag = tagRepository.findByName(tagName)
@@ -157,8 +161,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<PostSummaryDTO> findByAuthorsOrTags(List<String> authors, List<String> tags, int pageNumber, int pageSize, String order) {
-
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(order.equals("latest")?Sort.Direction.DESC:Sort.Direction.ASC, "createdAt"));
+
         Page<Post> paginatedPosts = postRepository.findByAuthorsOrTags(authors, tags, pageable);
         return paginatedPosts.map(post -> modelMapper.map(post, PostSummaryDTO.class));
     }
@@ -184,6 +188,33 @@ public class PostServiceImpl implements PostService {
     public Page<PostSummaryDTO> searchPaginatedPosts(String searchQuery, int pageNumber, int pageSize, String order) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(order.equals("latest")?Sort.Direction.DESC:Sort.Direction.ASC, "createdAt"));
         Page<Post> paginatedPosts = postRepository.searchPosts(searchQuery, pageable);
+        return paginatedPosts.map(post -> modelMapper.map(post, PostSummaryDTO.class));
+    }
+
+
+    public Page<PostSummaryDTO> findByAuthorsOrTagsSpec(List<String> authors, List<String> tags, int pageNumber, int pageSize, String order) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(order.equals("latest")?Sort.Direction.DESC:Sort.Direction.ASC, "createdAt"));
+
+        LocalDate startdate = LocalDate.of(2030, 1, 1);
+        LocalDate enddate = LocalDate.of(2030, 1, 1);
+
+        LocalDateTime startOfDay = startdate.atStartOfDay();
+        LocalDateTime endOfDay = enddate.atTime(23, 59, 59, 999999999);
+
+        Page<Post> paginatedPosts = postRepository.findByAuthorInOrTagsNameInOrCreatedAtBetween(authors, tags, startOfDay, endOfDay, pageable);
+
+
+//   Define specifications for each criterion
+//        Specification<Post> authorSpec = PostSpecification.postHasAuthor(authors);
+//        Specification<Post> tagSpec = PostSpecification.postHasTag(tags);
+//        Specification<Post> dateSpec = PostSpecification.postHasDate(date);
+//
+//// Combine specifications with OR logic
+//        Specification<Post> combinedSpec = Specification.where(authorSpec)
+//                .or(tagSpec)
+//                .or(dateSpec);
+//        Page<Post> paginatedPosts = postRepository.findAll(combinedSpec, pageable);
+
         return paginatedPosts.map(post -> modelMapper.map(post, PostSummaryDTO.class));
     }
 
