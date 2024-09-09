@@ -2,17 +2,16 @@ package io.mountblue.blogapplication.service;
 
 import io.mountblue.blogapplication.dto.CommentDTO;
 import io.mountblue.blogapplication.dto.PostDTO;
+import io.mountblue.blogapplication.dto.PostFilterDTO;
 import io.mountblue.blogapplication.dto.PostSummaryDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface PostService {
-    List<PostSummaryDTO> findAllPosts();
+    PostDTO savePost(PostDTO postRequestDTO);
 
     PostDTO findPostById(Long id);
-
-    PostDTO savePost(PostDTO postRequestDTO);
 
     PostDTO updatePost(Long id, PostDTO postRequestDTO);
 
@@ -22,17 +21,13 @@ public interface PostService {
 
     PostDTO deleteComment(Long postId, Long commentId);
 
-    List<PostSummaryDTO> findAllPostsByAuthor(String author);
-
     List<String> findAllTags();
-
-    Page<PostSummaryDTO> findByAuthorsOrTags(List<String> authors, List<String> tags, int pageNumber, int pageSize, String sort);
 
     List<String> findAllAuthors();
 
-    Page<PostSummaryDTO> findPaginatedPosts(int pageNumber, int pageSize, String order);
+    Page<PostSummaryDTO> findAllPosts(PostFilterDTO filterDTO);
 
-    Page<PostSummaryDTO> searchPaginatedPosts(String searchQuery, int pageNumber, int pageSize, String order);
+    Page<PostSummaryDTO> searchQueryPosts(PostFilterDTO filterDTO);
 
-    Page<PostSummaryDTO> findByAuthorsOrTagsSpec(List<String> authors, List<String> tags, int pageNumber, int pageSize, String sort);
+    Page<PostSummaryDTO> findFilteredPosts(PostFilterDTO filterDTO);
 }

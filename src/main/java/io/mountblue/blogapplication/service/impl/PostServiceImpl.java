@@ -2,6 +2,7 @@ package io.mountblue.blogapplication.service.impl;
 
 import io.mountblue.blogapplication.dto.CommentDTO;
 import io.mountblue.blogapplication.dto.PostDTO;
+import io.mountblue.blogapplication.dto.PostFilterDTO;
 import io.mountblue.blogapplication.dto.PostSummaryDTO;
 import io.mountblue.blogapplication.entity.Comment;
 import io.mountblue.blogapplication.entity.Post;
@@ -10,7 +11,6 @@ import io.mountblue.blogapplication.exception.ResourceNotFoundException;
 import io.mountblue.blogapplication.repository.PostRepository;
 import io.mountblue.blogapplication.repository.TagRepository;
 import io.mountblue.blogapplication.service.PostService;
-import io.mountblue.blogapplication.specification.PostSpecification;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,74 +37,52 @@ public class PostServiceImpl implements PostService {
     private ModelMapper modelMapper;
 
     @Override
-    public List<PostSummaryDTO> findAllPosts() {
-        return postRepository.findAll()
-                .stream()
-                .map(post -> modelMapper.map(post, PostSummaryDTO.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public PostDTO findPostById(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("failed to find post by id"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post with ID " + id + " not found"));
 
         PostDTO postDTO = modelMapper.map(post, PostDTO.class);
-        for (Tag tag : post.getTags()) {
-            postDTO.addTag(tag.getName());
-        }
+        post.getTags().forEach(tag -> postDTO.addTag(tag.getName()));
+
         return postDTO;
     }
 
     @Override
-    public PostDTO savePost(PostDTO postRequestDTO) {
-        Post post = modelMapper.map(postRequestDTO, Post.class);
+    public PostDTO savePost(PostDTO postDTO) {
+        Post post = modelMapper.map(postDTO, Post.class);
 
         post.setCreatedAt(LocalDateTime.now());
         post.setUpdatedAt(LocalDateTime.now());
         post.setPublishedAt(LocalDateTime.now());
         post.setPublished(true);
 
-        for (String tagName : postRequestDTO.getTagsList()) {
-            Tag tag = tagRepository.findByName(tagName)
-                    .orElseGet(() -> new Tag(tagName));
+        postDTO.getTagsList().forEach(tagName -> {
+            Tag tag = tagRepository.findByName(tagName).orElseGet(() -> new Tag(tagName));
             post.addTag(tag);
-        }
+        });
 
         Post savedPost = postRepository.save(post);
-        PostDTO postDTO = modelMapper.map(savedPost, PostDTO.class);
-
-        for (Tag tag : savedPost.getTags()) {
-            postDTO.addTag(tag.getName());
-        }
-
-        return postDTO;
+        return modelMapper.map(savedPost, PostDTO.class);
     }
 
     @Override
-    public PostDTO updatePost(Long id, PostDTO postRequestDTO) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Couldn't find Post with this id"));
+    public PostDTO updatePost(Long id, PostDTO postDTO) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Post with ID " + id + " not found"));
 
-        post.setTitle(postRequestDTO.getTitle());
-        post.setExcerpt(postRequestDTO.getExcerpt());
-        post.setContent(postRequestDTO.getContent());
+        post.setTitle(postDTO.getTitle());
+        post.setExcerpt(postDTO.getExcerpt());
+        post.setContent(postDTO.getContent());
         post.setUpdatedAt(LocalDateTime.now());
 
         post.getTags().clear();
-        for (String tagName : postRequestDTO.getTagsList()) {
-            Tag tag = tagRepository.findByName(tagName)
-                    .orElseGet(() -> new Tag(tagName));
+        postDTO.getTagsList().forEach(tagName -> {
+            Tag tag = tagRepository.findByName(tagName).orElseGet(() -> new Tag(tagName));
             post.addTag(tag);
-        }
+        });
 
-        Post savedPost = postRepository.save(post);
-        PostDTO postDTO = modelMapper.map(savedPost, PostDTO.class);
-
-        for (Tag tag : savedPost.getTags()) {
-            postDTO.addTag(tag.getName());
-        }
-
-        return postDTO;
+        Post updatedPost = postRepository.save(post);
+        return modelMapper.map(updatedPost, PostDTO.class);
     }
 
     @Override
@@ -120,7 +96,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDTO addComment(CommentDTO commentDTO, Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post dosen't exists"));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post with ID " + postId + " not found"));
 
         Comment comment = modelMapper.map(commentDTO, Comment.class);
         comment.setCreatedAt(LocalDateTime.now());
@@ -129,47 +106,29 @@ public class PostServiceImpl implements PostService {
 
         post.addComment(comment);
         Post savedPost = postRepository.save(post);
-        PostDTO postDTO = modelMapper.map(savedPost, PostDTO.class);
 
-        return postDTO;
+        return modelMapper.map(savedPost, PostDTO.class);
     }
 
     @Override
     public PostDTO deleteComment(Long postId, Long commentId) {
-        Post post = postRepository.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post dosen't exists"));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post with ID " + postId + " not found"));
+
         Comment comment = post.getComments().stream()
-                .filter(comment1 -> comment1.getId().equals(commentId))
+                .filter(c -> c.getId().equals(commentId))
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "The requested comment was not found for this post."
-                ));
+                .orElseThrow(() -> new ResourceNotFoundException("Comment with ID " + commentId + " not found"));
 
         post.removeComment(comment);
-        post = postRepository.save(post);
-        PostDTO postDTO = modelMapper.map(post, PostDTO.class);
+        Post updatedPost = postRepository.save(post);
 
-        return postDTO;
+        return modelMapper.map(updatedPost, PostDTO.class);
     }
 
     @Override
-    public List<PostSummaryDTO> findAllPostsByAuthor(String author) {
-        return postRepository.findAllByAuthor(author)
-                .stream()
-                .map(post -> modelMapper.map(post, PostSummaryDTO.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Page<PostSummaryDTO> findByAuthorsOrTags(List<String> authors, List<String> tags, int pageNumber, int pageSize, String order) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(order.equals("latest")?Sort.Direction.DESC:Sort.Direction.ASC, "createdAt"));
-
-        Page<Post> paginatedPosts = postRepository.findByAuthorsOrTags(authors, tags, pageable);
-        return paginatedPosts.map(post -> modelMapper.map(post, PostSummaryDTO.class));
-    }
-
-    @Override
-    public List<String> findAllTags(){
-        return tagRepository.findAll().stream().map(tag -> tag.getName()).collect(Collectors.toList());
+    public List<String> findAllTags() {
+        return tagRepository.findAll().stream().map(Tag::getName).collect(Collectors.toList());
     }
 
     @Override
@@ -178,44 +137,29 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<PostSummaryDTO> findPaginatedPosts(int pageNumber, int pageSize, String order) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(order.equals("latest")?Sort.Direction.DESC:Sort.Direction.ASC, "createdAt"));
+    public Page<PostSummaryDTO> findAllPosts(PostFilterDTO filterDTO) {
+        Pageable pageable = PageRequest.of(filterDTO.getPageNumber(), filterDTO.getPageSize(), Sort.by(filterDTO.getOrder().equals("latest") ? Sort.Direction.DESC : Sort.Direction.ASC, "createdAt"));
         Page<Post> paginatedPosts = postRepository.findAll(pageable);
         return paginatedPosts.map(post -> modelMapper.map(post, PostSummaryDTO.class));
     }
 
     @Override
-    public Page<PostSummaryDTO> searchPaginatedPosts(String searchQuery, int pageNumber, int pageSize, String order) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(order.equals("latest")?Sort.Direction.DESC:Sort.Direction.ASC, "createdAt"));
-        Page<Post> paginatedPosts = postRepository.searchPosts(searchQuery, pageable);
+    public Page<PostSummaryDTO> searchQueryPosts(PostFilterDTO filterDTO) {
+        Pageable pageable = PageRequest.of(filterDTO.getPageNumber(), filterDTO.getPageSize(), Sort.by(filterDTO.getOrder().equals("latest") ? Sort.Direction.DESC : Sort.Direction.ASC, "createdAt"));
+        Page<Post> paginatedPosts = postRepository.searchPosts(filterDTO.getSearchQuery(), pageable);
         return paginatedPosts.map(post -> modelMapper.map(post, PostSummaryDTO.class));
     }
 
+    @Override
+    public Page<PostSummaryDTO> findFilteredPosts(PostFilterDTO filterDTO) {
+        Pageable pageable = PageRequest.of(filterDTO.getPageNumber(), filterDTO.getPageSize(), Sort.by(filterDTO.getOrder().equals("latest") ? Sort.Direction.DESC : Sort.Direction.ASC, "createdAt"));
 
-    public Page<PostSummaryDTO> findByAuthorsOrTagsSpec(List<String> authors, List<String> tags, int pageNumber, int pageSize, String order) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(order.equals("latest")?Sort.Direction.DESC:Sort.Direction.ASC, "createdAt"));
+        if (filterDTO.getDate() == null && (filterDTO.getAuthors() == null || filterDTO.getAuthors().isEmpty()) && (filterDTO.getTags() == null || filterDTO.getTags().isEmpty())) {
+            filterDTO.setAuthors(findAllAuthors());
+            filterDTO.setTags(findAllTags());
+        }
 
-        LocalDate startdate = LocalDate.of(2030, 1, 1);
-        LocalDate enddate = LocalDate.of(2030, 1, 1);
-
-        LocalDateTime startOfDay = startdate.atStartOfDay();
-        LocalDateTime endOfDay = enddate.atTime(23, 59, 59, 999999999);
-
-        Page<Post> paginatedPosts = postRepository.findByAuthorInOrTagsNameInOrCreatedAtBetween(authors, tags, startOfDay, endOfDay, pageable);
-
-
-//   Define specifications for each criterion
-//        Specification<Post> authorSpec = PostSpecification.postHasAuthor(authors);
-//        Specification<Post> tagSpec = PostSpecification.postHasTag(tags);
-//        Specification<Post> dateSpec = PostSpecification.postHasDate(date);
-//
-//// Combine specifications with OR logic
-//        Specification<Post> combinedSpec = Specification.where(authorSpec)
-//                .or(tagSpec)
-//                .or(dateSpec);
-//        Page<Post> paginatedPosts = postRepository.findAll(combinedSpec, pageable);
-
+        Page<Post> paginatedPosts = postRepository.findByAuthorInOrTagsNameInOrCreatedAtBetween(filterDTO.getAuthors(), filterDTO.getTags(), filterDTO.getStartOfDay(), filterDTO.getEndOfDay(), pageable);
         return paginatedPosts.map(post -> modelMapper.map(post, PostSummaryDTO.class));
     }
-
 }

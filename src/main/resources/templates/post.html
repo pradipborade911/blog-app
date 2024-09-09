@@ -138,12 +138,12 @@
                         </p>
                         <p th:text="${comment.comment}">Comment Content</p>
 
-                        <form th:action="@{/{post_id}/{comment_id}/edit(post_id=${post.id}, comment_id=${comment.id})}">
+                        <form th:action="@{/{post_id}/comments/{comment_id}/edit(post_id=${post.id}, comment_id=${comment.id})}">
                             <input type="submit" value="Edit Post"/>
                         </form>
 
                         <form method="post"
-                              th:action="@{/{post_id}/{comment_id}/delete(post_id=${post.id}, comment_id=${comment.id})}">
+                              th:action="@{/{post_id}/comments/{comment_id}/delete(post_id=${post.id}, comment_id=${comment.id})}">
                             <input type="submit" value="Delete Comment"/>
                         </form>
                     </div>
@@ -155,7 +155,7 @@
 
     <div class="comment-form">
         <h3>Add a Comment</h3>
-        <form method="post" th:action="@{/{id}/comment (id=${post.id})}">
+        <form method="post" th:action="@{/{id}/addComment (id=${post.id})}">
             <input name="name" placeholder="Your Name" required type="text"/>
             <input name="email" placeholder="Email" required type="email"/>
             <textarea name="comment" placeholder="Your Comment" required></textarea>

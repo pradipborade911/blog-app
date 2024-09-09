@@ -1,7 +1,6 @@
 package io.mountblue.blogapplication.service.impl;
 
 import io.mountblue.blogapplication.dto.CommentDTO;
-import io.mountblue.blogapplication.dto.PostDTO;
 import io.mountblue.blogapplication.entity.Comment;
 import io.mountblue.blogapplication.exception.ResourceNotFoundException;
 import io.mountblue.blogapplication.repository.CommentRepository;
@@ -22,13 +21,15 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDTO getCommentById(Long id) {
-        Comment comment = commentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Comment does not exist"));
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment with ID " + id + " does not exist"));
         return modelMapper.map(comment, CommentDTO.class);
     }
 
     @Override
     public Long updateComment(CommentDTO commentDTO) {
-        Comment comment = commentRepository.findById(commentDTO.getId()).orElseThrow(() -> new ResourceNotFoundException("Comment does not exist"));
+        Comment comment = commentRepository.findById(commentDTO.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Comment does not exist"));
         comment.setUpdatedAt(LocalDateTime.now());
         comment.setComment(commentDTO.getComment());
 

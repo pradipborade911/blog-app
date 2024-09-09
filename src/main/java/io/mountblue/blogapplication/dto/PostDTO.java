@@ -2,7 +2,6 @@ package io.mountblue.blogapplication.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import java.util.List;
 
 @Setter
 @Getter
-@ToString
 public class PostDTO {
     private Long id;
 
@@ -22,7 +20,7 @@ public class PostDTO {
 
     private LocalDateTime updatedAt;
 
-    private LocalDateTime  publishedAt;
+    private LocalDateTime publishedAt;
 
     private String excerpt;
 

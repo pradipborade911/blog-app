@@ -10,40 +10,29 @@ import java.util.List;
 @Getter
 @Setter
 public class PostFilterDTO {
-    private int pageNumber = 0;
-    private int pageSize = 3;
+    private String order = "latest";
+
+    private String searchQuery;
+
     private List<String> tags;
+
     private List<String> authors;
-    private String order;
+
     private LocalDate date;
 
-    private LocalDateTime startOfDay = LocalDateTime.of(2020, 1, 1, 1,1);
+    private int pageNumber = 0;
+
+    private int pageSize = 9;
+
+    private LocalDateTime startOfDay = LocalDateTime.now();
 
     private LocalDateTime endOfDay = LocalDateTime.now();
 
     public void setDateTime(LocalDate dateTime) {
         this.date = dateTime;
-        if(dateTime!=null){
+        if (dateTime != null) {
             this.startOfDay = this.date.atStartOfDay();
             this.endOfDay = this.date.atTime(23, 59, 59, 999999999);
         }
-    }
-
-    public LocalDateTime getDateTime() {
-        return date.atStartOfDay();
-    }
-
-    @Override
-    public String toString() {
-        return "PostFilterDTO{" +
-                "authors=" + authors +
-                ", pageNumber=" + pageNumber +
-                ", pageSize=" + pageSize +
-                ", tags=" + tags +
-                ", order='" + order + '\'' +
-                ", dateTime=" + date +
-                ", startOfDay=" + startOfDay +
-                ", endOfDay=" + endOfDay +
-                '}';
     }
 }

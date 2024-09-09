@@ -52,7 +52,7 @@
 </head>
 <body>
 <div id="main">
-    <h1>New Post</h1>
+    <h1>Edit Post</h1>
     <form th:action="@{/{id}/update (id=${post.id}) }" method="post" id="form">
         <label for="title">Title:</label>
         <input type="text" id="id" name="id" th:value="${post.id}" hidden>
