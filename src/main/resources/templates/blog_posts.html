@@ -37,29 +37,29 @@
         }
 
         .post-summary {
-            margin: 10px;
+            margin: 20px;
             padding: 15px;
             border: 1px solid #ddd;
-            width: calc(33% - 20px);
+            width: calc(30% - 20px);
             box-sizing: border-box;
             cursor: pointer;
         }
 
         .post-title {
-            font-size: 18px;
+            font-size: 24px;
             font-weight: bold;
             margin-bottom: 5px;
         }
 
         .excerpt {
-            font-size: 18px;
+            font-size: 40px;
             font-weight: bold;
             margin-bottom: 5px;
         }
 
         .post-info {
             display: flex;
-            font-size: 12px;
+            font-size: 18px;
             margin-bottom: 5px;
         }
 
@@ -75,7 +75,7 @@
             padding: 2px 5px;
             margin: 5px;
             border-radius: 5px;
-            font-size: 12px;
+            font-size: 16px;
         }
 
         .accordion-toggle {
@@ -114,12 +114,11 @@
             gap: 20px;
         }
 
-        .pagination,
-        .pagination>* {
+        .pagination {
             display: flex;
-            gap: 20px;
+            flex-direction: row;
+            justify-content: space-between;
             padding: 10px 20px;
-            margin: 0 auto 0 auto;
         }
 
         a,
@@ -183,7 +182,7 @@
                 </div>
                 <div class="filter-sort options">
                     <form class="options" th:action="@{/filter}" method="get">
-                        <div id="select-date-section options">
+                        <div id="select-date-section options" style="display: flex">
                             <label class="accordion-header" for="select-date">Select Date</label>
                                 <input type="date" id="select-date" name="date">
                         </div>
@@ -227,8 +226,9 @@
                 <form class="clickable-form" method="get" th:action="@{/{id} (id=${post.id})}">
                     <div onclick="this.closest('form').submit()">
                         <h2 class="post-title" th:text="${post.title}"></h2>
-                        <div class="post-info">
-                            <span th:text="${post.author} + ', ' + ${post.publishedAt}"></span>
+                        <div class="post-info options">
+                            <span th:text="${post.author}"></span>
+                            <span th:text="${#temporals.format(post.publishedAt, 'yyyy-MM-dd HH:mm')}"></span>
                         </div>
                         <p class="post-info" th:text="${post.excerpt}"></p>
                         <div class="post-tags">
@@ -240,12 +240,13 @@
         </div>
 
         <!-- Pagination controls -->
-        <div class="pagination">
+        <div class="parent-pagination">
             <!-- Pagination for search -->
-            <div th:if="${search_query != null and !search_query.isEmpty()}">
-                <form th:action="@{/search}" method="get">
+            <div  class="pagination"
+                  th:if="${search_query != null and !search_query.isEmpty()}">
+                <form th:action="@{/search}" method="get" >
                     <input type="hidden" name="pageNumber" th:value="${currentPage - 1}" />
-                    <input type="hidden" name="pageSize" th:value="9" />
+                    <input type="hidden" name="pageSize" th:value="6" />
                     <input type="hidden" name="searchQuery" th:value="${search_query}" />
                     <input type="hidden" name="order" th:value="${order}" />
                     <button type="submit" th:if="${currentPage > 0}">Previous</button>
@@ -253,7 +254,7 @@
 
                 <form th:action="@{/search}" method="get">
                     <input type="hidden" name="pageNumber" th:value="${currentPage + 1}" />
-                    <input type="hidden" name="pageSize" th:value="9" />
+                    <input type="hidden" name="pageSize" th:value="6" />
                     <input type="hidden" name="searchQuery" th:value="${search_query}" />
                     <input type="hidden" name="order" th:value="${order}" />
                     <button type="submit" th:if="${currentPage < totalPages - 1}">Next</button>
@@ -262,11 +263,11 @@
             </div>
 
             <!-- Pagination for filter -->
-            <div
-                th:if="${selectedTags != null and !selectedTags.isEmpty() or selectedAuthors != null and !selectedAuthors.isEmpty()}">
+            <div class="pagination"
+                th:if="${date != null or selectedTags != null and !selectedTags.isEmpty() or selectedAuthors != null and !selectedAuthors.isEmpty()}">
                 <form th:action="@{/filter}" method="get">
                     <input type="hidden" name="pageNumber" th:value="${currentPage - 1}" />
-                    <input type="hidden" name="pageSize" th:value="9" />
+                    <input type="hidden" name="pageSize" th:value="6" />
                     <div th:each="tag : ${selectedTags}">
                         <input type="hidden" name="tags" th:value="${tag}" />
                     </div>
@@ -274,11 +275,12 @@
                         <input type="hidden" name="authors" th:value="${author}" />
                     </div>
                     <input type="hidden" name="order" th:value="${order}" />
+                    <input type="hidden" name="date" th:value="${date}" />
                     <button type="submit" th:if="${currentPage > 0}">Previous</button>
                 </form>
                 <form th:action="@{/filter}" method="get">
                     <input type="hidden" name="pageNumber" th:value="${currentPage + 1}" />
-                    <input type="hidden" name="pageSize" th:value="9" />
+                    <input type="hidden" name="pageSize" th:value="6" />
                     <div th:each="tag : ${selectedTags}">
                         <input type="hidden" name="tags" th:value="${tag}" />
                     </div>
@@ -286,22 +288,23 @@
                         <input type="hidden" name="authors" th:value="${author}" />
                     </div>
                     <input type="hidden" name="order" th:value="${order}" />
+                    <input type="hidden" name="date" th:value="${date}" />
                     <button type="submit" th:if="${currentPage < totalPages - 1}">Next</button>
                 </form>
             </div>
 
             <!-- Default Pagination -->
-            <div
-                th:if="${(selectedTags == null or selectedTags.isEmpty()) and (selectedAuthors == null or selectedAuthors.isEmpty()) and (search_query == null or search_query.isEmpty())}">
+            <div class="pagination"
+                th:if="${ date == null and (selectedTags == null or selectedTags.isEmpty()) and (selectedAuthors == null or selectedAuthors.isEmpty()) and (search_query == null or search_query.isEmpty())}">
                 <form th:action="@{/}" method="get">
                     <input type="hidden" name="pageNumber" th:value="${currentPage - 1}" />
-                    <input type="hidden" name="pageSize" th:value="9" />
+                    <input type="hidden" name="pageSize" th:value="6" />
                     <input type="hidden" name="order" th:value="${order}" />
                     <button type="submit" th:if="${currentPage > 0}">Previous</button>
                 </form>
                 <form th:action="@{/}" method="get">
                     <input type="hidden" name="pageNumber" th:value="${currentPage + 1}" />
-                    <input type="hidden" name="pageSize" th:value="9" />
+                    <input type="hidden" name="pageSize" th:value="6" />
                     <input type="hidden" name="order" th:value="${order}" />
                     <button type="submit" th:if="${currentPage < totalPages - 1}">Next</button>
                 </form>

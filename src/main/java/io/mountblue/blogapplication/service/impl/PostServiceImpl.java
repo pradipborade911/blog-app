@@ -153,13 +153,12 @@ public class PostServiceImpl implements PostService {
     @Override
     public Page<PostSummaryDTO> findFilteredPosts(PostFilterDTO filterDTO) {
         Pageable pageable = PageRequest.of(filterDTO.getPageNumber(), filterDTO.getPageSize(), Sort.by(filterDTO.getOrder().equals("latest") ? Sort.Direction.DESC : Sort.Direction.ASC, "createdAt"));
-
+        Page<Post> paginatedPosts;
         if (filterDTO.getDate() == null && (filterDTO.getAuthors() == null || filterDTO.getAuthors().isEmpty()) && (filterDTO.getTags() == null || filterDTO.getTags().isEmpty())) {
-            filterDTO.setAuthors(findAllAuthors());
-            filterDTO.setTags(findAllTags());
+            paginatedPosts = postRepository.findByAuthorInOrTagsNameInOrCreatedAtBetween(findAllAuthors(), findAllTags(), filterDTO.getStartOfDay(), filterDTO.getEndOfDay(), pageable);
+        }else {
+            paginatedPosts = postRepository.findByAuthorInOrTagsNameInOrCreatedAtBetween(filterDTO.getAuthors(), filterDTO.getTags(), filterDTO.getStartOfDay(), filterDTO.getEndOfDay(), pageable);
         }
-
-        Page<Post> paginatedPosts = postRepository.findByAuthorInOrTagsNameInOrCreatedAtBetween(filterDTO.getAuthors(), filterDTO.getTags(), filterDTO.getStartOfDay(), filterDTO.getEndOfDay(), pageable);
         return paginatedPosts.map(post -> modelMapper.map(post, PostSummaryDTO.class));
     }
 }

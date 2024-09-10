@@ -62,6 +62,7 @@ public class PostController {
         model.addAttribute("selectedTags", filterDTO.getTags());
         model.addAttribute("selectedAuthors", filterDTO.getAuthors());
         model.addAttribute("order", filterDTO.getOrder());
+        model.addAttribute("date", filterDTO.getDate());
 
         return "blog_posts";
     }

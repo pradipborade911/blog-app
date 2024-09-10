@@ -22,13 +22,13 @@ public class PostFilterDTO {
 
     private int pageNumber = 0;
 
-    private int pageSize = 9;
+    private int pageSize = 6;
 
     private LocalDateTime startOfDay = LocalDateTime.now();
 
     private LocalDateTime endOfDay = LocalDateTime.now();
 
-    public void setDateTime(LocalDate dateTime) {
+    public void setDate(LocalDate dateTime) {
         this.date = dateTime;
         if (dateTime != null) {
             this.startOfDay = this.date.atStartOfDay();

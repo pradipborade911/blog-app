@@ -77,12 +77,28 @@
         }
 
         .comment-form input[type="text"],
+        .comment-form input[type="email"],
         .comment-form textarea {
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
             border: 1px solid #ddd;
             border-radius: 3px;
+        }
+        a,
+        button,
+         input[type="submit"]{
+            cursor: pointer;
+            background-color: #999d99;
+            min-height: 35px;
+            max-height: 35px;
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+
+            color: white;
+            border: none;
+            font-size: 0.8em;
         }
     </style>
 </head>
@@ -94,13 +110,13 @@
             </h1>
         </form>
     </div>
-    
+
     <div class="post-container">
     <div class="post-header">
         <h1 class="post-title" th:text="${post.title}"></h1>
         <div class="post-info">
             <p><strong>Author:</strong> <span th:text="${post.author}"/></p>
-            <p><strong>Published At:</strong> <span th:text="${post.publishedAt}"/></p>
+            <p><strong>Published At:</strong> <span th:text="${#temporals.format(post.publishedAt, 'yyyy-MM-dd HH:mm')}"></span></p>
         </div>
     </div>
 
@@ -114,6 +130,7 @@
             <li th:each="tag : ${post.tagsList}" th:text="${tag}">Tag</li>
         </ul>
     </div>
+        <div style="display: flex; gap:20px">
 
     <div class="post-delete">
         <form method="get" th:action="@{/{id}/edit (id=${post.id})}">
@@ -126,6 +143,7 @@
             <input type="submit" value="Delete Post"/>
         </form>
     </div>
+        </div>
 
     <div class="comments" th:if="${post.comments != null}">
         <h2>Comments</h2>
@@ -138,14 +156,16 @@
                         </p>
                         <p th:text="${comment.comment}">Comment Content</p>
 
+                        <div style="display: flex; gap:20px">
                         <form th:action="@{/{post_id}/comments/{comment_id}/edit(post_id=${post.id}, comment_id=${comment.id})}">
-                            <input type="submit" value="Edit Post"/>
+                            <input type="submit" value="Edit Comment"/>
                         </form>
 
                         <form method="post"
                               th:action="@{/{post_id}/comments/{comment_id}/delete(post_id=${post.id}, comment_id=${comment.id})}">
                             <input type="submit" value="Delete Comment"/>
                         </form>
+                        </div>
                     </div>
 
                 </div>
