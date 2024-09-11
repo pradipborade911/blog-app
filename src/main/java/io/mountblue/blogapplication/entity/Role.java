@@ -1,4 +1,4 @@
-package io.mountblue.blogapplication.security;
+package io.mountblue.blogapplication.entity;
 
 
 import jakarta.persistence.*;

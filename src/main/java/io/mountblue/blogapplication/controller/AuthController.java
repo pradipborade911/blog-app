@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class LoginCotroller {
+public class AuthController {
     @Autowired
     UserService userService;
 
     @GetMapping("signin")
     public String showLoginPage(){
-        return "loginpage";
+        return "login_page";
     }
 
     @GetMapping("register")

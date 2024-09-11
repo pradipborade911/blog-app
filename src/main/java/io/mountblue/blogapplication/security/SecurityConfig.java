@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +16,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
@@ -40,9 +42,13 @@ public class SecurityConfig {
     public SecurityFilterChain customFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(configurer ->
                         configurer
-                                .requestMatchers(HttpMethod.GET, "/*").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/register").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/*/addComment").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/").permitAll() //view all posts
+                                .requestMatchers(HttpMethod.GET, "/{id:\\d+}").permitAll() //view specific post
+                                .requestMatchers(HttpMethod.GET, "/search").permitAll() //search in posts
+                                .requestMatchers(HttpMethod.GET, "/filter").permitAll() //filter posts
+                                .requestMatchers(HttpMethod.POST, "/register").permitAll() //register new user
+                                .requestMatchers(HttpMethod.GET, "/register").permitAll() //register new user
+                                .requestMatchers(HttpMethod.POST, "/*/addComment").permitAll() //add comment to post
 
                                 .requestMatchers("/newpost").hasAnyRole("ADMIN", "AUTHOR")
                                 .requestMatchers("/*/edit").hasAnyRole("ADMIN", "AUTHOR")

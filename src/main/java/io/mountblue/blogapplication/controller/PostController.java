@@ -46,7 +46,7 @@ public class PostController {
         PostDTO postDTO = postService.findPostById(id);
         model.addAttribute("post", postDTO);
 
-        return "post";
+        return "view_post";
     }
 
     @GetMapping("/filter")
@@ -88,12 +88,12 @@ public class PostController {
         PostDTO postDTO = postService.savePost(postRequestDTO);
         model.addAttribute("post", postDTO);
 
-        return "post";
+        return "view_post";
     }
 
     @GetMapping("/newpost")
     public String createPostForm() {
-        return "newpost";
+        return "new_post";
     }
 
     @GetMapping("/{id}/edit")
@@ -103,7 +103,7 @@ public class PostController {
         String tags = String.join(", ", postDTO.getTagsList());
         model.addAttribute("tags", tags);
 
-        return "editpost";
+        return "edit_post";
     }
 
     @PostMapping("/{id}/update")
@@ -140,6 +140,6 @@ public class PostController {
         CommentDTO commentDTO = commentService.getCommentById(commentId);
         model.addAttribute("comment", commentDTO);
 
-        return "editcomment";
+        return "edit_comment";
     }
 }

@@ -4,10 +4,13 @@ import io.mountblue.blogapplication.entity.User;
 import io.mountblue.blogapplication.exception.ResourceNotFoundException;
 import io.mountblue.blogapplication.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+
+import java.util.Collection;
 
 @Component
 public class BlogUserDetailsService implements UserDetailsService {
@@ -16,11 +19,12 @@ public class BlogUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("HAHAHAHAHAHAHAHAHA");
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("User not found by username")
                 );
+
+//        System.out.println(user);
 
         return user;
     }

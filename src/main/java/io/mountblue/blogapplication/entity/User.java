@@ -1,12 +1,8 @@
 package io.mountblue.blogapplication.entity;
 
 
-import io.mountblue.blogapplication.security.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -21,6 +17,7 @@ import java.util.Set;
 @Setter
 @Table(name = "users")
 @Entity
+@ToString
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +39,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @ManyToMany(fetch = FetchType.LAZY,
+    @ManyToMany(fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
     @JoinTable(name = "user_roles",
@@ -53,7 +50,9 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return roles.stream()
+                .map(role -> (GrantedAuthority) role::getName)
+                .toList();
     }
 
     @Override
@@ -79,4 +78,6 @@ public class User implements UserDetails {
     public void addRole(Role role){
         roles.add(role);
     }
+
+
 }
