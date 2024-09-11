@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <title>Create New Post</title>
     <style>
@@ -52,6 +52,21 @@
     </style>
 </head>
 <body>
+<div class="header">
+    <form th:action="@{/}" id="blogForm">
+        <h1 onclick="document.getElementById('blogForm').submit();" style="cursor: pointer;">
+            Blog Application
+        </h1>
+    </form>
+
+    <div class="header-right">
+        <div class="search-login options">
+            <form class="logout" action="#" th:action="@{/logout}" method="POST">
+                <input type="submit" value="Logout">
+            </form>
+        </div>
+    </div>
+</div>
 <div id="main">
     <h1>New Post</h1>
     <form action="/newpost" method="post" id="form">

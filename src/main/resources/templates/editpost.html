@@ -51,6 +51,21 @@
     </style>
 </head>
 <body>
+<div class="header">
+    <form th:action="@{/}" id="blogForm">
+        <h1 onclick="document.getElementById('blogForm').submit();" style="cursor: pointer;">
+            Blog Application
+        </h1>
+    </form>
+
+    <div class="header-right">
+        <div class="search-login options">
+            <form class="logout" action="#" th:action="@{/logout}" method="POST">
+                <input type="submit" value="Logout">
+            </form>
+        </div>
+    </div>
+</div>
 <div id="main">
     <h1>Edit Post</h1>
     <form th:action="@{/{id}/update (id=${post.id}) }" method="post" id="form">

@@ -178,7 +178,9 @@
                         </select>
                         <button type="submit">Search</button>
                     </form>
-                    <a href="/login">Login</a>
+                    <form class="logout" action="#" th:action="@{/logout}" method="POST">
+                        <input type="submit" value="Logout">
+                    </form>
                 </div>
                 <div class="filter-sort options">
                     <form class="options" th:action="@{/filter}" method="get">

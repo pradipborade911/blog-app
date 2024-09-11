@@ -125,7 +125,7 @@ public class PostController {
         PostDTO postDTO = postService.addComment(commentDTO, id);
         model.addAttribute("post", postDTO);
 
-        return "post";
+        return "redirect:/{id}";
     }
 
     @PostMapping("/{postId}/comments/{commentId}/delete")
