@@ -16,13 +16,13 @@ public class PostFilterDTO {
 
     private List<String> tags;
 
-    private List<String> authors;
+    private List<Long> authors;
 
     private LocalDate date;
 
     private int pageNumber = 0;
 
-    private int pageSize = 6;
+    private int pageSize = 3;
 
     private LocalDateTime startOfDay = LocalDateTime.now();
 

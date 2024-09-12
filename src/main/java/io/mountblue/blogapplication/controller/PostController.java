@@ -8,6 +8,7 @@ import io.mountblue.blogapplication.service.CommentService;
 import io.mountblue.blogapplication.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +17,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class PostController {
-
     @Autowired
     PostService postService;
 
@@ -31,6 +32,7 @@ public class PostController {
         Page<PostSummaryDTO> postsPage = postService.findAllPosts(filterDTO);
         List<PostSummaryDTO> posts = postsPage.getContent();
 
+        System.out.println(filterDTO.getAuthors());
         model.addAttribute("posts", posts);
         model.addAttribute("authors", postService.findAllAuthors());
         model.addAttribute("tags", postService.findAllTags());
@@ -92,21 +94,24 @@ public class PostController {
     }
 
     @GetMapping("/newpost")
-    public String createPostForm() {
+    public String createPostForm(Model model){
+        model.addAttribute("post", new PostDTO());
         return "new_post";
     }
 
     @GetMapping("/{id}/edit")
+    @PreAuthorize("@postService.isCreator(#id) || hasRole('ADMIN')")
     public String editPostForm(@PathVariable Long id, Model model) {
         PostDTO postDTO = postService.findPostById(id);
         model.addAttribute("post", postDTO);
-        String tags = String.join(", ", postDTO.getTagsList());
+        String tags = String.join(", ", postDTO.getTags().stream().map(tagDTO -> tagDTO.getName()).collect(Collectors.toList()));
         model.addAttribute("tags", tags);
 
         return "edit_post";
     }
 
     @PostMapping("/{id}/update")
+    @PreAuthorize("@postService.isCreator(#id) || hasRole('ADMIN')")
     public String updatePost(@ModelAttribute PostDTO postRequestDTO, @PathVariable Long id, Model model) {
         PostDTO postDTO = postService.updatePost(id, postRequestDTO);
 
@@ -114,32 +119,11 @@ public class PostController {
     }
 
     @PostMapping("/{id}")
+    @PreAuthorize("@postService.isCreator(#id) || hasRole('ADMIN')")
     public String deletePost(@PathVariable Long id, Model model) {
         postService.deletePostById(id);
 
         return "redirect:/";
     }
 
-    @PostMapping("/{id}/addComment")
-    public String addComment(@ModelAttribute CommentDTO commentDTO, @PathVariable Long id, Model model) {
-        PostDTO postDTO = postService.addComment(commentDTO, id);
-        model.addAttribute("post", postDTO);
-
-        return "redirect:/{id}";
-    }
-
-    @PostMapping("/{postId}/comments/{commentId}/delete")
-    public String deleteComment(@PathVariable Long postId, @PathVariable Long commentId) {
-        PostDTO postDTO = postService.deleteComment(postId, commentId);
-
-        return "redirect:/" + postDTO.getId();
-    }
-
-    @GetMapping("/{postId}/comments/{commentId}/edit")
-    public String editCommentForm(@PathVariable Long postId, @PathVariable Long commentId, Model model) {
-        CommentDTO commentDTO = commentService.getCommentById(commentId);
-        model.addAttribute("comment", commentDTO);
-
-        return "edit_comment";
-    }
 }

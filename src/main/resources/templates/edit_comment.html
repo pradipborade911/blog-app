@@ -89,7 +89,7 @@
 <h2>Edit Comment</h2>  <p>Name: <span th:text="${comment.name}"></span></p>
 <p>Email: <span th:text="${comment.email}"></span></p>
 
-<form th:action="@{/comments/{id}/update(id=${comment.id})}" method="post">
+    <form method="post" th:action="@{/comments/{comment_id}/update(comment_id=${comment.id})}">
     <input type="hidden" name="id" th:value="${comment.id}"/>
 
     <div>

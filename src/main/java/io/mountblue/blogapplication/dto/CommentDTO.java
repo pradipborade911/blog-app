@@ -1,5 +1,6 @@
 package io.mountblue.blogapplication.dto;
 
+import io.mountblue.blogapplication.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,4 +20,6 @@ public class CommentDTO {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    private UserDTO author;
 }

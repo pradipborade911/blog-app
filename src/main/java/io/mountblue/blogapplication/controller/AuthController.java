@@ -26,8 +26,7 @@ public class AuthController {
     }
 
     @PostMapping("register")
-    @ResponseBody
     public String registerUser(User user, Model model){
         userService.saveUser(user);
-        return "registered";
+        return "login_page";
     }}

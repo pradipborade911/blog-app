@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 
 <head>
     <title>Blog Application</title>
@@ -178,9 +178,20 @@
                         </select>
                         <button type="submit">Search</button>
                     </form>
+                    <div  sec:authorize="hasAnyRole('AUTHOR','ADMIN')">
+                        <span th:text="${#authentication.principal.firstName}"></span>
+                        <span th:text="${#authentication.principal.lastName}"></span>
+                    </div>
+                    <div  sec:authorize="hasAnyRole('AUTHOR','ADMIN')">
                     <form class="logout" action="#" th:action="@{/logout}" method="POST">
                         <input type="submit" value="Logout">
                     </form>
+                    </div>
+                    <div  sec:authorize="!hasAnyRole('AUTHOR','ADMIN')">
+                        <form class="logout" action="#" th:action="@{/login}" method="POST">
+                            <input type="submit" value="Login">
+                        </form>
+                    </div>
                 </div>
                 <div class="filter-sort options">
                     <form class="options" th:action="@{/filter}" method="get">
@@ -206,9 +217,10 @@
                             <label class="accordion-header" for="select-author">Select Authors</label>
                             <div class="accordion-content">
                                 <div th:each="author : ${authors}">
-                                    <input name="authors" th:value="${author}" type="checkbox"
-                                        th:checked="${selectedAuthors != null and selectedAuthors.contains(author)}" />
-                                    <span th:text="${author}"></span>
+                                    <input name="authors" th:value="${author.id}" type="checkbox"
+                                        th:checked="${selectedAuthors != null and selectedAuthors.contains(author.id)}" />
+                                    <span th:text="${author.firstName}"></span>
+                                    <span th:text="${author.lastName}"></span>
                                 </div>
                             </div>
                         </div>
@@ -229,7 +241,10 @@
                     <div onclick="this.closest('form').submit()">
                         <h2 class="post-title" th:text="${post.title}"></h2>
                         <div class="post-info options">
-                            <span th:text="${post.author}"></span>
+                            <div>
+                            <span th:text="${post.author.firstName}"></span>
+                            <span th:text="${post.author.lastName}"></span>
+                            </div>
                             <span th:text="${#temporals.format(post.publishedAt, 'yyyy-MM-dd HH:mm')}"></span>
                         </div>
                         <p class="post-info" th:text="${post.excerpt}"></p>
@@ -248,7 +263,7 @@
                   th:if="${search_query != null and !search_query.isEmpty()}">
                 <form th:action="@{/search}" method="get" >
                     <input type="hidden" name="pageNumber" th:value="${currentPage - 1}" />
-                    <input type="hidden" name="pageSize" th:value="6" />
+                    <input type="hidden" name="pageSize" th:value="3" />
                     <input type="hidden" name="searchQuery" th:value="${search_query}" />
                     <input type="hidden" name="order" th:value="${order}" />
                     <button type="submit" th:if="${currentPage > 0}">Previous</button>
@@ -256,7 +271,7 @@
 
                 <form th:action="@{/search}" method="get">
                     <input type="hidden" name="pageNumber" th:value="${currentPage + 1}" />
-                    <input type="hidden" name="pageSize" th:value="6" />
+                    <input type="hidden" name="pageSize" th:value="3" />
                     <input type="hidden" name="searchQuery" th:value="${search_query}" />
                     <input type="hidden" name="order" th:value="${order}" />
                     <button type="submit" th:if="${currentPage < totalPages - 1}">Next</button>
@@ -269,7 +284,7 @@
                 th:if="${date != null or selectedTags != null and !selectedTags.isEmpty() or selectedAuthors != null and !selectedAuthors.isEmpty()}">
                 <form th:action="@{/filter}" method="get">
                     <input type="hidden" name="pageNumber" th:value="${currentPage - 1}" />
-                    <input type="hidden" name="pageSize" th:value="6" />
+                    <input type="hidden" name="pageSize" th:value="3" />
                     <div th:each="tag : ${selectedTags}">
                         <input type="hidden" name="tags" th:value="${tag}" />
                     </div>
@@ -282,7 +297,7 @@
                 </form>
                 <form th:action="@{/filter}" method="get">
                     <input type="hidden" name="pageNumber" th:value="${currentPage + 1}" />
-                    <input type="hidden" name="pageSize" th:value="6" />
+                    <input type="hidden" name="pageSize" th:value="3" />
                     <div th:each="tag : ${selectedTags}">
                         <input type="hidden" name="tags" th:value="${tag}" />
                     </div>
@@ -300,13 +315,13 @@
                 th:if="${ date == null and (selectedTags == null or selectedTags.isEmpty()) and (selectedAuthors == null or selectedAuthors.isEmpty()) and (search_query == null or search_query.isEmpty())}">
                 <form th:action="@{/}" method="get">
                     <input type="hidden" name="pageNumber" th:value="${currentPage - 1}" />
-                    <input type="hidden" name="pageSize" th:value="6" />
+                    <input type="hidden" name="pageSize" th:value="3" />
                     <input type="hidden" name="order" th:value="${order}" />
                     <button type="submit" th:if="${currentPage > 0}">Previous</button>
                 </form>
                 <form th:action="@{/}" method="get">
                     <input type="hidden" name="pageNumber" th:value="${currentPage + 1}" />
-                    <input type="hidden" name="pageSize" th:value="6" />
+                    <input type="hidden" name="pageSize" th:value="3" />
                     <input type="hidden" name="order" th:value="${order}" />
                     <button type="submit" th:if="${currentPage < totalPages - 1}">Next</button>
                 </form>

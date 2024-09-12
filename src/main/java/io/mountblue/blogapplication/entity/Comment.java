@@ -41,6 +41,10 @@ public class Comment {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "author_id")
+    private User author;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

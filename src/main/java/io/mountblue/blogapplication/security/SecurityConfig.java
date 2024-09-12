@@ -12,31 +12,13 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-
     @Autowired
     BlogUserDetailsService blogUserDetailsService;
-
-//@Bean
-//    public InMemoryUserDetailsManager userDetailsManagerTwo(){
-//        UserDetails userPradeep = User.builder()
-//                .username("pradipborade")
-//                .password("{noop}Password!789")
-//                .roles("GUEST")
-//                .build();
-//
-//    UserDetails userSachin = User.builder()
-//            .username("sachinsharma")
-//            .password("{noop}Password!789")
-//            .roles("AUTHOR")
-//            .build();
-//    return new InMemoryUserDetailsManager(userPradeep, userSachin);
-//    }
 
     @Bean
     public SecurityFilterChain customFilterChain(HttpSecurity http) throws Exception {
@@ -55,6 +37,7 @@ public class SecurityConfig {
                                 .requestMatchers("/*/delete").hasAnyRole("ADMIN", "AUTHOR")
                                 .requestMatchers("/*/comments/*/edit").hasAnyRole("ADMIN", "AUTHOR")
                                 .requestMatchers("/*/comments/*/delete").hasAnyRole("ADMIN", "AUTHOR")
+                                .requestMatchers("/comments/*/update").hasAnyRole("ADMIN", "AUTHOR")
                                 .requestMatchers("/*/update").hasAnyRole("ADMIN", "AUTHOR")
                                 .requestMatchers(HttpMethod.POST, "/**").hasAnyRole("ADMIN")
 

@@ -33,8 +33,10 @@ public class Post {
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "author")
-    private String author;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "author_id")
+//    @Column(name = "author")
+    private User author;
 
     @Column(name = "published_at")
     private LocalDateTime publishedAt;
@@ -69,5 +71,13 @@ public class Post {
 
     public void removeComment(Comment comment) {
         comments.remove(comment);
+    }
+
+    public List<String> getTagNames() {
+        List<String> tagNames = new ArrayList<>();
+        for (Tag tag : tags) {
+            tagNames.add(tag.getName());
+        }
+        return tagNames;
     }
 }

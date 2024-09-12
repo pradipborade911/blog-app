@@ -1,11 +1,34 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <title th:text="'Post - ' + ${post.title}"/>
+
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+        }
+
+        .container {
+            padding: 20px;
+            margin-top: 5px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .post-container {
@@ -92,9 +115,10 @@
             background-color: #999d99;
             min-height: 35px;
             max-height: 35px;
-            padding: 10px 20px;
+            padding: 1px 10px;
             border: 1px solid #ddd;
             box-sizing: border-box;
+            font-weight: bold;
 
             color: white;
             border: none;
@@ -103,6 +127,7 @@
     </style>
 </head>
 <body>
+<div class="container">
     <div class="header">
         <form th:action="@{/}" id="blogForm">
             <h1 onclick="document.getElementById('blogForm').submit();" style="cursor: pointer;">
@@ -111,9 +136,11 @@
         </form>
         <div class="header-right">
             <div class="search-login options">
-                <form class="logout" action="#" th:action="@{/logout}" method="POST">
-                    <input type="submit" value="Logout">
-                </form>
+                <div  sec:authorize="hasAnyRole('AUTHOR','ADMIN')">
+                    <form class="logout" action="#" th:action="@{/logout}" method="POST">
+                        <input type="submit" value="Logout">
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -122,7 +149,10 @@
     <div class="post-header">
         <h1 class="post-title" th:text="${post.title}"></h1>
         <div class="post-info">
-            <p><strong>Author:</strong> <span th:text="${post.author}"/></p>
+            <p><strong>Author:</strong>
+                <span th:text="${post.author.firstName}"/>
+                <span th:text="${post.author.lastName}"/>
+            </p>
             <p><strong>Published At:</strong> <span th:text="${#temporals.format(post.publishedAt, 'yyyy-MM-dd HH:mm')}"></span></p>
         </div>
     </div>
@@ -134,18 +164,18 @@
     <div class="post-tags">
         <h2>Tags</h2>
         <ul>
-            <li th:each="tag : ${post.tagsList}" th:text="${tag}">Tag</li>
+            <li th:each="tag : ${post.tags}" th:text="${tag.name}">Tag</li>
         </ul>
     </div>
         <div style="display: flex; gap:20px">
 
-    <div class="post-delete">
+    <div class="post-delete" sec:authorize="(hasRole('AUTHOR') and #authentication.principal.id== #vars.post.author.id) || hasRole('ADMIN')">
         <form method="get" th:action="@{/{id}/edit (id=${post.id})}">
             <input type="submit" value="Edit Post"/>
         </form>
     </div>
 
-    <div class="post-delete">
+    <div class="post-delete" sec:authorize="(hasRole('AUTHOR') and #authentication.principal.id== #vars.post.author.id) || hasRole('ADMIN')">
         <form method="post" th:action="@{/{id} (id=${post.id})}">
             <input type="submit" value="Delete Post"/>
         </form>
@@ -163,7 +193,10 @@
                         </p>
                         <p th:text="${comment.comment}">Comment Content</p>
 
-                        <div style="display: flex; gap:20px">
+                        <div sec:authorize="(hasRole('AUTHOR') and #authentication.principal.id== #vars.post.author.id)
+                                          ||(hasRole('AUTHOR') and #authentication.principal.id == #vars.comment.author.id)
+                                          || hasRole('ADMIN')"
+                             style="display: flex; gap:20px" >
                         <form th:action="@{/{post_id}/comments/{comment_id}/edit(post_id=${post.id}, comment_id=${comment.id})}">
                             <input type="submit" value="Edit Comment"/>
                         </form>
@@ -190,5 +223,7 @@
         </form>
     </div>
 </div>
+</div>
+
 </body>
 </html>

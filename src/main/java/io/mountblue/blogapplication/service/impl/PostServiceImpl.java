@@ -1,15 +1,15 @@
 package io.mountblue.blogapplication.service.impl;
 
-import io.mountblue.blogapplication.dto.CommentDTO;
-import io.mountblue.blogapplication.dto.PostDTO;
-import io.mountblue.blogapplication.dto.PostFilterDTO;
-import io.mountblue.blogapplication.dto.PostSummaryDTO;
+import io.mountblue.blogapplication.dto.*;
 import io.mountblue.blogapplication.entity.Comment;
 import io.mountblue.blogapplication.entity.Post;
 import io.mountblue.blogapplication.entity.Tag;
+import io.mountblue.blogapplication.entity.User;
 import io.mountblue.blogapplication.exception.ResourceNotFoundException;
+import io.mountblue.blogapplication.repository.CommentRepository;
 import io.mountblue.blogapplication.repository.PostRepository;
 import io.mountblue.blogapplication.repository.TagRepository;
+import io.mountblue.blogapplication.repository.UserRepository;
 import io.mountblue.blogapplication.service.PostService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
@@ -18,14 +18,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Transactional
-@Service
+@Service("postService")
 public class PostServiceImpl implements PostService {
     @Autowired
     private PostRepository postRepository;
@@ -33,6 +36,11 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private TagRepository tagRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    CommentRepository commentRepository;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -42,15 +50,16 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new ResourceNotFoundException("Post with ID " + id + " not found"));
 
         PostDTO postDTO = modelMapper.map(post, PostDTO.class);
-        post.getTags().forEach(tag -> postDTO.addTag(tag.getName()));
-
         return postDTO;
     }
 
     @Override
     public PostDTO savePost(PostDTO postDTO) {
         Post post = modelMapper.map(postDTO, Post.class);
+        User user = getAuthenticatedUser()
+                .orElseThrow(() -> new IllegalStateException("User is not logged in."));
 
+        post.setAuthor(user);
         post.setCreatedAt(LocalDateTime.now());
         post.setUpdatedAt(LocalDateTime.now());
         post.setPublishedAt(LocalDateTime.now());
@@ -100,6 +109,13 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow(() -> new ResourceNotFoundException("Post with ID " + postId + " not found"));
 
         Comment comment = modelMapper.map(commentDTO, Comment.class);
+
+        User user = getAuthenticatedUser()
+                .orElseThrow(() -> new IllegalStateException("User is not logged in."));
+
+        if(user != null)
+            comment.setAuthor(user);
+
         comment.setCreatedAt(LocalDateTime.now());
         comment.setUpdatedAt(LocalDateTime.now());
         comment.setPost(post);
@@ -132,8 +148,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<String> findAllAuthors() {
-        return postRepository.findAllAuthors();
+    public List<UserDTO> findAllAuthors() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(user -> modelMapper.map(user, UserDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -152,13 +171,52 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<PostSummaryDTO> findFilteredPosts(PostFilterDTO filterDTO) {
-        Pageable pageable = PageRequest.of(filterDTO.getPageNumber(), filterDTO.getPageSize(), Sort.by(filterDTO.getOrder().equals("latest") ? Sort.Direction.DESC : Sort.Direction.ASC, "createdAt"));
+        Pageable pageable = PageRequest.of(filterDTO.getPageNumber(),
+                filterDTO.getPageSize(),
+                Sort.by(filterDTO.getOrder().equals("latest") ? Sort.Direction.DESC : Sort.Direction.ASC, "createdAt"));
+
         Page<Post> paginatedPosts;
-        if (filterDTO.getDate() == null && (filterDTO.getAuthors() == null || filterDTO.getAuthors().isEmpty()) && (filterDTO.getTags() == null || filterDTO.getTags().isEmpty())) {
-            paginatedPosts = postRepository.findByAuthorInOrTagsNameInOrCreatedAtBetween(findAllAuthors(), findAllTags(), filterDTO.getStartOfDay(), filterDTO.getEndOfDay(), pageable);
+
+        if (filterDTO.getDate() == null && filterDTO.getAuthors() == null && filterDTO.getTags() == null) {
+            paginatedPosts = postRepository.findAll(pageable);
         }else {
-            paginatedPosts = postRepository.findByAuthorInOrTagsNameInOrCreatedAtBetween(filterDTO.getAuthors(), filterDTO.getTags(), filterDTO.getStartOfDay(), filterDTO.getEndOfDay(), pageable);
+            paginatedPosts = postRepository.findByAuthorInOrTagsNameInOrCreatedAtBetween(
+                    filterDTO.getAuthors(),
+                    filterDTO.getTags(),
+                    filterDTO.getStartOfDay(),
+                    filterDTO.getEndOfDay(),
+                    pageable);
         }
+
         return paginatedPosts.map(post -> modelMapper.map(post, PostSummaryDTO.class));
+    }
+
+    private Optional<User> getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() instanceof User) {
+            return Optional.of((User) authentication.getPrincipal());
+        }
+
+        return Optional.empty();
+    }
+
+    public boolean isCreator(Long id){
+        User user = getAuthenticatedUser()
+                .orElseThrow(() -> new IllegalStateException("User is not logged in."));
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found."));
+
+        return user.getId() == post.getAuthor().getId();
+    }
+
+    public boolean isOwnerOfCommentedPost(Long id){
+        User user = getAuthenticatedUser()
+                .orElseThrow(() -> new IllegalStateException("User is not logged in."));
+
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found."));
+
+        return comment.getPost().getId() == user.getId();
     }
 }

@@ -16,7 +16,7 @@ public class PostSummaryDTO {
 
     private String excerpt;
 
-    private String author;
+    private UserDTO author;
 
     private LocalDateTime publishedAt;
 

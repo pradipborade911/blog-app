@@ -79,5 +79,7 @@ public class User implements UserDetails {
         roles.add(role);
     }
 
-
+    public String getFullName(){
+        return this.firstName + " " + this.lastName;
+    }
 }

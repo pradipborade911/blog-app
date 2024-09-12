@@ -1,9 +1,6 @@
 package io.mountblue.blogapplication.service;
 
-import io.mountblue.blogapplication.dto.CommentDTO;
-import io.mountblue.blogapplication.dto.PostDTO;
-import io.mountblue.blogapplication.dto.PostFilterDTO;
-import io.mountblue.blogapplication.dto.PostSummaryDTO;
+import io.mountblue.blogapplication.dto.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -23,11 +20,13 @@ public interface PostService {
 
     List<String> findAllTags();
 
-    List<String> findAllAuthors();
+    List<UserDTO> findAllAuthors();
 
     Page<PostSummaryDTO> findAllPosts(PostFilterDTO filterDTO);
 
     Page<PostSummaryDTO> searchQueryPosts(PostFilterDTO filterDTO);
 
     Page<PostSummaryDTO> findFilteredPosts(PostFilterDTO filterDTO);
+
+    public boolean isCreator(Long id);
 }

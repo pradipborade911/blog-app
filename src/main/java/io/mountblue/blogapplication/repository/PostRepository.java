@@ -1,5 +1,6 @@
 package io.mountblue.blogapplication.repository;
 
+import io.mountblue.blogapplication.dto.UserDTO;
 import io.mountblue.blogapplication.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,25 +20,26 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
     @Override
     Page<Post> findAll(Pageable pageable);
 
-    @Query("SELECT DISTINCT post.author FROM Post post")
-    List<String> findAllAuthors();
-
     @Query("SELECT DISTINCT p FROM Post p " +
             "LEFT JOIN p.tags t " +
+            "LEFT JOIN p.author u " +
             "WHERE (:query IS NULL OR :query = '' " +
             "OR LOWER(p.title) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "OR LOWER(p.excerpt) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "OR LOWER(p.content) LIKE LOWER(CONCAT('%', :query, '%')) " +
-            "OR LOWER(p.author) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(u.firstName) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "OR LOWER(t.name) LIKE LOWER(CONCAT('%', :query, '%')))")
     Page<Post> searchPosts(@Param("query") String query, Pageable pageable);
 
-    @Query("SELECT DISTINCT post FROM Post post LEFT JOIN post.tags tags " +
-            "WHERE post.author IN :authors " +
+    @Query("SELECT DISTINCT post FROM Post post " +
+            "LEFT JOIN post.tags tags " +
+            "LEFT JOIN post.author u " +
+            "WHERE u.id IN :authors " +
             "OR tags.name IN :tags " +
             "OR post.createdAt BETWEEN :startOfDay AND :endOfDay")
     Page<Post> findByAuthorInOrTagsNameInOrCreatedAtBetween(
-            @Param("authors") List<String> authors,
+            @Param("authors") List<Long> authors,
             @Param("tags") List<String> tags,
             @Param("startOfDay") LocalDateTime startOfDay,
             @Param("endOfDay") LocalDateTime endOfDay,
