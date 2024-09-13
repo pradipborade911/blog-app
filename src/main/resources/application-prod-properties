@@ -1,6 +1,6 @@
-spring.datasource.url=jdbc:mysql://mysql.railway.internal:3306/railway?createDatabaseIfNotExist=true
+spring.datasource.url=jdbc:mysql://mysql.railway.internal:3306/railway
 spring.datasource.username=root
-spring.datasource.password=${{MYSQL_ROOT_PASSWORD}}
+spring.datasource.password=yGQFxmOEHGMGWtzOQoiJVBITNnvZXijg
 
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=false
