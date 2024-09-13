@@ -48,8 +48,6 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new IllegalStateException("User is not logged in."));
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found."));
-        System.out.println(user.getId());
-        System.out.println(comment.getAuthor().getId());
         return user.getId() == comment.getAuthor().getId();
     }
 

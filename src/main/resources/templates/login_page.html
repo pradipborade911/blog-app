@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -12,14 +12,24 @@
 </head>
 <body>
 <div class="container">
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <form th:action="@{/}" id="blogForm">
+                <h1 onclick="document.getElementById('blogForm').submit();" style="cursor: pointer;">
+                    Blog Application
+                </h1>
+            </form>
+        </div>
     <form class="form-signin" method="POST" action="#" th:action="@{/authenticateTheUser} ">
 <!--    <form class="form-signin" method="post" action="/authenticateTheUser">-->
-        <h2 class="form-signin-heading">Please sign in</h2>
+        <h2 style="display: flex; justify-content: center; align-items: center;" class="form-signin-heading">Please sign in</h2>
         <div th:if="${param.error}" class="alert alert-danger" role="alert">
             Invalid username or password
         </div>
         <div th:if="${param.logout}" class="alert alert-danger" role="alert">
             You have been logged out
+        </div>
+        <div th:if="${successMessage}" class="alert alert-danger" role="alert">
+            Your account has been created successfully! Please log in to get started.
         </div>
         <p>
         <label for="username" class="sr-only">Username</label>

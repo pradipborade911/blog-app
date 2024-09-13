@@ -7,6 +7,13 @@
 </head>
 <body>
 <div class="container">
+    <div style="display: flex; justify-content: center; align-items: center;">
+        <form th:action="@{/}" id="blogForm">
+            <h1 onclick="document.getElementById('blogForm').submit();" style="cursor: pointer;">
+                Blog Application
+            </h1>
+        </form>
+    </div>
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card">
@@ -34,6 +41,9 @@
                         <div class="form-group">
                             <label for="password">Password:</label>
                             <input type="password" class="form-control" id="password" th:field="*{password}" required>
+                        </div>
+                        <div th:if="${errorMessage}" class="alert alert-danger">
+                            <span th:text="${errorMessage}"></span>
                         </div>
                         <button type="submit" class="btn btn-primary">Register</button>
                     </form>

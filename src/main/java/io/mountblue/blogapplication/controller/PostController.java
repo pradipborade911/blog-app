@@ -32,7 +32,6 @@ public class PostController {
         Page<PostSummaryDTO> postsPage = postService.findAllPosts(filterDTO);
         List<PostSummaryDTO> posts = postsPage.getContent();
 
-        System.out.println(filterDTO.getAuthors());
         model.addAttribute("posts", posts);
         model.addAttribute("authors", postService.findAllAuthors());
         model.addAttribute("tags", postService.findAllTags());

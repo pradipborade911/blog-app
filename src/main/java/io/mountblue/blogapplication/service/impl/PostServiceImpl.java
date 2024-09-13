@@ -110,11 +110,16 @@ public class PostServiceImpl implements PostService {
 
         Comment comment = modelMapper.map(commentDTO, Comment.class);
 
-        User user = getAuthenticatedUser()
-                .orElseThrow(() -> new IllegalStateException("User is not logged in."));
+        Optional<User> user = getAuthenticatedUser();
 
-        if(user != null)
-            comment.setAuthor(user);
+        if(user.isPresent()){
+            comment.setAuthor(user.get());
+            comment.setEmail(user.get().getEmail());
+            comment.setName(user.get().getFullName());
+        }else{
+            User guest = userRepository.findById(8L).orElseThrow();
+            comment.setAuthor(guest);
+        }
 
         comment.setCreatedAt(LocalDateTime.now());
         comment.setUpdatedAt(LocalDateTime.now());
@@ -217,6 +222,6 @@ public class PostServiceImpl implements PostService {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found."));
 
-        return comment.getPost().getId() == user.getId();
+        return comment.getPost().getAuthor().getId() == user.getId();
     }
 }

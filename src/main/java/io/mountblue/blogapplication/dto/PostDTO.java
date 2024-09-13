@@ -11,7 +11,6 @@ import java.util.Set;
 
 @Setter
 @Getter
-@ToString
 public class PostDTO {
     private Long id;
 

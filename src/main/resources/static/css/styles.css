@@ -1,0 +1,176 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 20px;
+}
+
+h1 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Layout and Container Styles */
+.container, #form {
+    padding: 20px;
+    margin-top: 5px;
+}
+
+#main, .header, .post-container, .pagination, .options {
+    display: flex;
+}
+
+#main, .header {
+    justify-content: space-between;
+}
+
+#main {
+    flex-direction: column;
+    align-items: center;
+}
+
+#form, .post-container {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    max-width: 500px;
+    width: 500px;
+}
+
+#form > *, .post-container > * {
+    margin-bottom: 10px;
+}
+
+.posts, .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.accordion-toggle, .accordion-header {
+    display: none;
+}
+
+/* Text and Content Styles */
+.post-title, .excerpt, .comment-author {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.post-info, .post-tags-info, label, input, textarea, button, a {
+    font-size: 16px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.post-content p, textarea, input[type="text"], input[type="email"], .comment-form input[type="text"], .comment-form input[type="email"], .comment-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Button and Link Styles */
+button, a, input[type="submit"] {
+    cursor: pointer;
+    background-color: #999d99;
+    min-height: 35px;
+    max-height: 35px;
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    color: white;
+    border: none;
+    font-size: 0.8em;
+}
+
+button:hover {
+    background-color: #3e8e41;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Accordion Styles */
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    width: 150px;
+    background-color: #eee;
+}
+
+.accordion-toggle:checked + .accordion-header + .accordion-content {
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    margin: 20px;
+}
+
+/* Specific Styles for Posts and Comments */
+.post-tags-info, .comment-form input, .comment-form textarea {
+    background-color: #eee;
+    padding: 2px 5px;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+.comment {
+    margin-bottom: 15px;
+}
+
+.comments {
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+}
+
+.comment-form {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+}
+
+textarea {
+    height: 200px;
+}
+
+/* Additional Specific Styles */
+.post-summary {
+    margin: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    width: calc(30% - 20px);
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.post-title {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.post-content, .post-delete {
+    margin-top: 20px;
+}
+
+.post-tags ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.post-tags li {
+    display: inline-block;
+    margin-right: 10px;
+    background-color: #eee;
+    padding: 5px 10px;
+    border-radius: 3px;
+}

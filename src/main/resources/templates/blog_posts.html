@@ -1,333 +1,443 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <title>Blog Application</title>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+            rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+          font-size: 1.1rem;
         }
 
-        .container {
-            padding: 20px;
-            margin-top: 5px;
-        }
+            .container {
+                padding: 20px;
+                margin-top: 5px;
+            }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 20px;
-        }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 20px;
+            }
 
-        .header h1 {
-            margin: 0;
-        }
+            .header h1 {
+                margin: 0;
+            }
 
-        .header-right {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+            .header-right {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
 
-        .posts {
-            display: flex;
-            flex-wrap: wrap;
-        }
+            .posts {
+                display: flex;
+                flex-wrap: wrap;
+            }
 
-        .post-summary {
-            margin: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            width: calc(30% - 20px);
-            box-sizing: border-box;
-            cursor: pointer;
-        }
+            .post-summary {
+                margin: 20px;
+                padding: 15px;
+                border: 1px solid #514f4f;
+                width: calc(30% - 20px);
+                box-sizing: border-box;
+                cursor: pointer;
+                border-radius: 5px;
+            }
 
-        .post-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
+            .post-title {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
 
-        .excerpt {
-            font-size: 40px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
+            .excerpt {
+                font-size: 40px;
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
 
-        .post-info {
-            display: flex;
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
+            .post-info {
+                display: flex;
+                font-size: 18px;
+                margin-bottom: 5px;
+            }
 
-        .post-tags {
-            display: flex;
-            flex-wrap: wrap;
-        }
+            .post-tags {
+                display: flex;
+                flex-wrap: wrap;
+            }
 
-        .post-tags-info {
-            display: flex;
-            flex-wrap: wrap;
-            background-color: #eee;
-            padding: 2px 5px;
-            margin: 5px;
-            border-radius: 5px;
-            font-size: 16px;
-        }
+            .post-tags-info {
+                display: flex;
+                flex-wrap: wrap;
+                background-color: #eee;
+                padding: 2px 5px;
+                margin: 5px;
+                border-radius: 5px;
+                font-size: 16px;
+            }
 
-        .accordion-toggle {
-            display: none;
-        }
+            .options {
+                display: flex;
+                gap: 20px;
+            }
 
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            width: 150px;
-            background-color: #eee;
-        }
+            .pagination {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 10px 20px;
+            }
 
-        .accordion-content>* {
-            margin: 10px;
-            width: 500px;
-        }
+            a,
+            button {
+                padding: 10px 20px;
+                background-color: #4e82bb;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
 
-        .accordion-header {
-            cursor: pointer;
-            padding: 10px;
-            background-color: #f0f0f0;
-            display: block;
-            width: 150px;
-        }
+            .button:hover {
+                background-color:#0069d9;
+            }
 
-        .accordion-toggle:checked+.accordion-header+.accordion-content {
-            max-height: 200px;
-            overflow-y: auto;
-            position: absolute;
-            margin: auto 20px auto 20px;
-        }
+            input,
+            select {
+        background-color: #f1f1f1;
+                padding: 10px 20px;
+                color: black;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: large;
 
-        .options {
-            display: flex;
-            gap: 20px;
-        }
+            }
 
-        .pagination {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            padding: 10px 20px;
-        }
 
-        a,
-        button {
-            cursor: pointer;
-            background-color: #999d99;
-            min-height: 35px;
-            max-height: 35px;
-            padding: 10px 20px;
-            border: 1px solid #ddd;
-            box-sizing: border-box;
+    /* Dropdown container */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
 
-            color: white;
-            border: none;
-            font-size: 0.8em;
-        }
+    /* Dropdown button */
+    .dropdown-btn {
+        background-color: #4CAF50; /* Green */
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        border-radius: 4px;
+    }
 
-        input,
-        select,
-        accordion-header {
-            background-color: #f0f0f0;
-            min-height: 35px;
-            max-height: 35px;
-            padding: 10px 20px;
-            border: 1px solid #ddd;
-            box-sizing: border-box;
-            font-size: 0.8em;
-        }
+    /* Dropdown content (hidden by default) */
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 300px;
+        max-height: 200px; /* Restrict height */
+        overflow-y: auto; /* Add scrollbar if content exceeds max-height */
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        border-radius: 4px;
+    }
+
+    /* Show the dropdown content when the button is clicked */
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    /* Style the checkboxes and labels */
+    .dropdown-content label {
+        display: block;
+        padding: 8px 16px;
+        cursor: pointer;
+    }
+
+    /* Change background color on hover */
+    .dropdown-content label:hover {
+        background-color: #f1f1f1;
+    }
+
+    /* Style the checkboxes */
+    .dropdown-content input[type="checkbox"] {
+        margin-right: 8px;
+    }
+    /* Container for the date picker */
+    .date-picker-container {
+        margin: 20px;
+    }
+
+    /* Style the label */
+    .date-picker-container label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 16px;
+    }
+
+    /* Style the date input */
+    .date-picker-container input[type="date"] {
+        padding: 8px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100%; /* Adjust width as needed */
+        box-sizing: border-box; /* Ensures padding is included in width */
+    }
+
+
+/* Common button styles */
+input[type="submit"] {
+    padding: 8px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+}
+
+/* Specific styles for Edit, Delete, and Logout buttons */
+input[type="submit"].edit-button {
+    background-color: #4CAF50; /* Green for Edit */
+}
+
+input[type="submit"].delete-button {
+    background-color: #f44336; /* Red for Delete */
+}
+
+input[type="submit"].logout-button {
+    background-color: #FF9800; /* Orange for Logout */
+}
+input[type="submit"].login-button {
+    background-color: #09ee1c; /* Orange for Logout */
+}
+input[type="submit"].logout-button {
+    background-color: #FF9800; /* Orange for Logout */
+}
+/* Hover effects for all buttons */
+input[type="submit"]:hover {
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+
+        /* Profile Button Styling */
+.profile-button {
+    background-color: #007bff; /* Primary blue color */
+    color: white; /* White text color */
+    padding: 10px 20px; /* Padding for button size */
+    font-size: 14px; /* Font size */
+    cursor: none; /* Pointer cursor on hover */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transitions */
+    font-weight: large;
+}
+
+/* Hover Effect */
+.profile-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+}
+
+/* Active Effect */
+.profile-button:active {
+    background-color: #004494; /* Even darker blue when active */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Shadow effect on click */
+}
+
     </style>
 </head>
 
 <body>
-    <div class="container">
+<div class="container">
 
-        <div class="header">
-            <form th:action="@{/}" id="blogForm">
-                <h1 onclick="document.getElementById('blogForm').submit();" style="cursor: pointer;">
-                    Blog Application
-                </h1>
-            </form>
+    <div class="header">
+        <form id="blogForm" th:action="@{/}">
+            <h1 onclick="document.getElementById('blogForm').submit();" style="cursor: pointer;">
+                Blog Application
+            </h1>
+        </form>
 
-            <div class="header-right">
-                <div class="search-login options">
-                    <form th:action="@{/}" onchange="this.submit()">
-                        <select id="sort" name="order">
-                            <option value="latest" th:selected="${order == 'latest'}">Latest</option>
-                            <option value="oldest" th:selected="${order == 'oldest'}">Oldest</option>
-                        </select>
-                    </form>
-                    <a th:href="@{/newpost}">New Post</a>
-                    <form th:action="@{/search}">
-                        <input class="search-bar" name="searchQuery" th:value="${search_query}" placeholder="Search"
-                            type="text" />
-                        <select name="order" hidden>
-                            <option value="latest" th:selected="${order == 'latest'}">Latest</option>
-                            <option value="oldest" th:selected="${order == 'oldest'}">Oldest</option>
-                        </select>
-                        <button type="submit">Search</button>
-                    </form>
-                    <div  sec:authorize="hasAnyRole('AUTHOR','ADMIN')">
-                        <span th:text="${#authentication.principal.firstName}"></span>
-                        <span th:text="${#authentication.principal.lastName}"></span>
-                    </div>
-                    <div  sec:authorize="hasAnyRole('AUTHOR','ADMIN')">
-                    <form class="logout" action="#" th:action="@{/logout}" method="POST">
-                        <input type="submit" value="Logout">
-                    </form>
-                    </div>
-                    <div  sec:authorize="!hasAnyRole('AUTHOR','ADMIN')">
-                        <form class="logout" action="#" th:action="@{/login}" method="POST">
-                            <input type="submit" value="Login">
-                        </form>
-                    </div>
+        <div class="header-right">
+            <div class="search-login options">
+                <form onchange="this.submit()" th:action="@{/}">
+                    <select id="sort" name="order">
+                        <option th:selected="${order == 'latest'}" value="latest">Latest</option>
+                        <option th:selected="${order == 'oldest'}" value="oldest">Oldest</option>
+                    </select>
+                </form>
+                <a th:href="@{/newpost}">New Post</a>
+                <form th:action="@{/search}">
+                    <input class="search-bar" name="searchQuery" placeholder="Search" th:value="${search_query}"
+                           type="text"/>
+                    <select hidden name="order">
+                        <option th:selected="${order == 'latest'}" value="latest">Latest</option>
+                        <option th:selected="${order == 'oldest'}" value="oldest">Oldest</option>
+                    </select>
+                    <button type="submit">Search</button>
+                </form>
+                <div sec:authorize="hasAnyRole('AUTHOR','ADMIN')">
+                    <button class="profile-button">
+                    <span th:text="${#authentication.principal.firstName}"></span>
+                    <span th:text="${#authentication.principal.lastName}"></span>
+                    </button>
                 </div>
-                <div class="filter-sort options">
-                    <form class="options" th:action="@{/filter}" method="get">
-                        <div id="select-date-section options" style="display: flex">
-                            <label class="accordion-header" for="select-date">Select Date</label>
-                                <input type="date" id="select-date" name="date">
-                        </div>
+                <div sec:authorize="hasAnyRole('AUTHOR','ADMIN')">
+                    <form action="#" class="logout" method="POST" th:action="@{/logout}">
+                        <input type="submit" value="Logout" class="logout-button">
+                    </form>
+                </div>
+                <div sec:authorize="!hasAnyRole('AUTHOR','ADMIN')">
+                    <form action="#" class="logout" method="POST" th:action="@{/login}">
+                        <input type="submit" value="Login" class="login-button">
+                    </form>
+                </div>
+            </div>
+            <div class="filter-sort options">
+                <form class="options" method="get" th:action="@{/filter}">
+                    <div id="options" style="display: flex">
+                        <input id="select-date" name="date" type="date">
+                    </div>
 
-                        <div id="select-tags-section">
-                            <input class="accordion-toggle" id="select-tags" type="checkbox" />
-                            <label class="accordion-header" for="select-tags">Select Tags</label>
-                            <div class="accordion-content">
-                                <div th:each="tag : ${tags}">
-                                    <input name="tags" th:value="${tag}" type="checkbox"
-                                        th:checked="${selectedTags != null and selectedTags.contains(tag)}" />
-                                    <span th:text="${tag}"></span>
-                                </div>
-                            </div>
+                    <div class="dropdown">
+                        <button class="dropdown-btn">Select Tags</button>
+                        <div class="dropdown-content">
+                            <label><div th:each="tag : ${tags}">
+                                <input name="tags" th:checked="${selectedTags != null and selectedTags.contains(tag)}"
+                                       th:value="${tag}"
+                                       type="checkbox"/>
+                                <span th:text="${tag}"></span>
+                            </div></label>
                         </div>
-
-                        <div id="select-author-section">
-                            <input class="accordion-toggle" id="select-author" type="checkbox" />
-                            <label class="accordion-header" for="select-author">Select Authors</label>
-                            <div class="accordion-content">
+                    </div>
+                    <div class="dropdown">
+                        <button class="dropdown-btn">Select Authors</button>
+                        <div class="dropdown-content">
+                            <label>
                                 <div th:each="author : ${authors}">
-                                    <input name="authors" th:value="${author.id}" type="checkbox"
-                                        th:checked="${selectedAuthors != null and selectedAuthors.contains(author.id)}" />
+                                    <input name="authors"
+                                           th:checked="${selectedAuthors != null and selectedAuthors.contains(author.id)}"
+                                           th:value="${author.id}"
+                                           type="checkbox"/>
                                     <span th:text="${author.firstName}"></span>
                                     <span th:text="${author.lastName}"></span>
                                 </div>
-                            </div>
+                            </label>
                         </div>
-                        <select name="order" hidden>
-                            <option value="latest" th:selected="${order == 'latest'}">Latest</option>
-                            <option value="oldest" th:selected="${order == 'oldest'}">Oldest</option>
-                        </select>
-                        <button type="submit">Filter</button>
-                    </form>
 
-                </div>
-            </div>
-        </div>
-
-        <div class="posts">
-            <div class="post-summary" th:each="post : ${posts}">
-                <form class="clickable-form" method="get" th:action="@{/{id} (id=${post.id})}">
-                    <div onclick="this.closest('form').submit()">
-                        <h2 class="post-title" th:text="${post.title}"></h2>
-                        <div class="post-info options">
-                            <div>
-                            <span th:text="${post.author.firstName}"></span>
-                            <span th:text="${post.author.lastName}"></span>
-                            </div>
-                            <span th:text="${#temporals.format(post.publishedAt, 'yyyy-MM-dd HH:mm')}"></span>
-                        </div>
-                        <p class="post-info" th:text="${post.excerpt}"></p>
-                        <div class="post-tags">
-                            <span class="post-tags-info" th:each="tag : ${post.tags}" th:text="${tag.name}"></span>
-                        </div>
                     </div>
-                </form>
-            </div>
-        </div>
 
-        <!-- Pagination controls -->
-        <div class="parent-pagination">
-            <!-- Pagination for search -->
-            <div  class="pagination"
-                  th:if="${search_query != null and !search_query.isEmpty()}">
-                <form th:action="@{/search}" method="get" >
-                    <input type="hidden" name="pageNumber" th:value="${currentPage - 1}" />
-                    <input type="hidden" name="pageSize" th:value="3" />
-                    <input type="hidden" name="searchQuery" th:value="${search_query}" />
-                    <input type="hidden" name="order" th:value="${order}" />
-                    <button type="submit" th:if="${currentPage > 0}">Previous</button>
+                    <select hidden name="order">
+                        <option th:selected="${order == 'latest'}" value="latest">Latest</option>
+                        <option th:selected="${order == 'oldest'}" value="oldest">Oldest</option>
+                    </select>
+                    <button type="submit">Filter</button>
                 </form>
 
-                <form th:action="@{/search}" method="get">
-                    <input type="hidden" name="pageNumber" th:value="${currentPage + 1}" />
-                    <input type="hidden" name="pageSize" th:value="3" />
-                    <input type="hidden" name="searchQuery" th:value="${search_query}" />
-                    <input type="hidden" name="order" th:value="${order}" />
-                    <button type="submit" th:if="${currentPage < totalPages - 1}">Next</button>
-                </form>
-
-            </div>
-
-            <!-- Pagination for filter -->
-            <div class="pagination"
-                th:if="${date != null or selectedTags != null and !selectedTags.isEmpty() or selectedAuthors != null and !selectedAuthors.isEmpty()}">
-                <form th:action="@{/filter}" method="get">
-                    <input type="hidden" name="pageNumber" th:value="${currentPage - 1}" />
-                    <input type="hidden" name="pageSize" th:value="3" />
-                    <div th:each="tag : ${selectedTags}">
-                        <input type="hidden" name="tags" th:value="${tag}" />
-                    </div>
-                    <div th:each="author : ${selectedAuthors}">
-                        <input type="hidden" name="authors" th:value="${author}" />
-                    </div>
-                    <input type="hidden" name="order" th:value="${order}" />
-                    <input type="hidden" name="date" th:value="${date}" />
-                    <button type="submit" th:if="${currentPage > 0}">Previous</button>
-                </form>
-                <form th:action="@{/filter}" method="get">
-                    <input type="hidden" name="pageNumber" th:value="${currentPage + 1}" />
-                    <input type="hidden" name="pageSize" th:value="3" />
-                    <div th:each="tag : ${selectedTags}">
-                        <input type="hidden" name="tags" th:value="${tag}" />
-                    </div>
-                    <div th:each="author : ${selectedAuthors}">
-                        <input type="hidden" name="authors" th:value="${author}" />
-                    </div>
-                    <input type="hidden" name="order" th:value="${order}" />
-                    <input type="hidden" name="date" th:value="${date}" />
-                    <button type="submit" th:if="${currentPage < totalPages - 1}">Next</button>
-                </form>
-            </div>
-
-            <!-- Default Pagination -->
-            <div class="pagination"
-                th:if="${ date == null and (selectedTags == null or selectedTags.isEmpty()) and (selectedAuthors == null or selectedAuthors.isEmpty()) and (search_query == null or search_query.isEmpty())}">
-                <form th:action="@{/}" method="get">
-                    <input type="hidden" name="pageNumber" th:value="${currentPage - 1}" />
-                    <input type="hidden" name="pageSize" th:value="3" />
-                    <input type="hidden" name="order" th:value="${order}" />
-                    <button type="submit" th:if="${currentPage > 0}">Previous</button>
-                </form>
-                <form th:action="@{/}" method="get">
-                    <input type="hidden" name="pageNumber" th:value="${currentPage + 1}" />
-                    <input type="hidden" name="pageSize" th:value="3" />
-                    <input type="hidden" name="order" th:value="${order}" />
-                    <button type="submit" th:if="${currentPage < totalPages - 1}">Next</button>
-                </form>
             </div>
         </div>
     </div>
+
+    <div class="posts">
+        <div class="post-summary" th:each="post : ${posts}">
+            <form class="clickable-form" method="get" th:action="@{/{id} (id=${post.id})}">
+                <div onclick="this.closest('form').submit()">
+                    <h2 class="post-title" th:text="${post.title}"></h2>
+                    <div class="post-info options">
+                        <div class="loggedin-div">
+                            <span class="loggedin-span" th:text="${post.author.firstName}"></span>
+                            <span class="loggedin-span" th:text="${post.author.lastName}"></span>
+                        </div>
+                        <span th:text="${#temporals.format(post.publishedAt, 'yyyy-MM-dd HH:mm')}"></span>
+                    </div>
+                    <p class="post-info" th:text="${post.excerpt}"></p>
+                    <div class="post-tags">
+                        <span class="post-tags-info" th:each="tag : ${post.tags}" th:text="${tag.name}"></span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Pagination controls -->
+    <div class="parent-pagination">
+        <!-- Pagination for search -->
+        <div class="pagination"
+             th:if="${search_query != null and !search_query.isEmpty()}">
+            <form method="get" th:action="@{/search}">
+                <input name="pageNumber" th:value="${currentPage - 1}" type="hidden"/>
+                <input name="pageSize" th:value="3" type="hidden"/>
+                <input name="searchQuery" th:value="${search_query}" type="hidden"/>
+                <input name="order" th:value="${order}" type="hidden"/>
+                <button th:if="${currentPage > 0}" type="submit">Previous</button>
+            </form>
+
+            <form method="get" th:action="@{/search}">
+                <input name="pageNumber" th:value="${currentPage + 1}" type="hidden"/>
+                <input name="pageSize" th:value="3" type="hidden"/>
+                <input name="searchQuery" th:value="${search_query}" type="hidden"/>
+                <input name="order" th:value="${order}" type="hidden"/>
+                <button th:if="${currentPage < totalPages - 1}" type="submit">Next</button>
+            </form>
+
+        </div>
+
+        <!-- Pagination for filter -->
+        <div class="pagination"
+             th:if="${date != null or selectedTags != null and !selectedTags.isEmpty() or selectedAuthors != null and !selectedAuthors.isEmpty()}">
+            <form method="get" th:action="@{/filter}">
+                <input name="pageNumber" th:value="${currentPage - 1}" type="hidden"/>
+                <input name="pageSize" th:value="3" type="hidden"/>
+                <div th:each="tag : ${selectedTags}">
+                    <input name="tags" th:value="${tag}" type="hidden"/>
+                </div>
+                <div th:each="author : ${selectedAuthors}">
+                    <input name="authors" th:value="${author}" type="hidden"/>
+                </div>
+                <input name="order" th:value="${order}" type="hidden"/>
+                <input name="date" th:value="${date}" type="hidden"/>
+                <button th:if="${currentPage > 0}" type="submit">Previous</button>
+            </form>
+            <form method="get" th:action="@{/filter}">
+                <input name="pageNumber" th:value="${currentPage + 1}" type="hidden"/>
+                <input name="pageSize" th:value="3" type="hidden"/>
+                <div th:each="tag : ${selectedTags}">
+                    <input name="tags" th:value="${tag}" type="hidden"/>
+                </div>
+                <div th:each="author : ${selectedAuthors}">
+                    <input name="authors" th:value="${author}" type="hidden"/>
+                </div>
+                <input name="order" th:value="${order}" type="hidden"/>
+                <input name="date" th:value="${date}" type="hidden"/>
+                <button th:if="${currentPage < totalPages - 1}" type="submit">Next</button>
+            </form>
+        </div>
+
+        <!-- Default Pagination -->
+        <div class="pagination"
+             th:if="${ date == null and (selectedTags == null or selectedTags.isEmpty()) and (selectedAuthors == null or selectedAuthors.isEmpty()) and (search_query == null or search_query.isEmpty())}">
+            <form method="get" th:action="@{/}">
+                <input name="pageNumber" th:value="${currentPage - 1}" type="hidden"/>
+                <input name="pageSize" th:value="3" type="hidden"/>
+                <input name="order" th:value="${order}" type="hidden"/>
+                <button th:if="${currentPage > 0}" type="submit">Previous</button>
+            </form>
+            <form method="get" th:action="@{/}">
+                <input name="pageNumber" th:value="${currentPage + 1}" type="hidden"/>
+                <input name="pageSize" th:value="3" type="hidden"/>
+                <input name="order" th:value="${order}" type="hidden"/>
+                <button th:if="${currentPage < totalPages - 1}" type="submit">Next</button>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>
