@@ -1,8 +1,7 @@
 package io.mountblue.blogapplication.service;
 
-import io.mountblue.blogapplication.entity.User;
-import org.springframework.stereotype.Service;
+import io.mountblue.blogapplication.dto.RegisterRequestDTO;
 
 public interface UserService {
-    void saveUser(User userDTO);
+    void saveUser(RegisterRequestDTO registerRequestDTO);
 }

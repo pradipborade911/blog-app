@@ -1,6 +1,5 @@
 package io.mountblue.blogapplication.repository;
 
-import io.mountblue.blogapplication.dto.UserDTO;
 import io.mountblue.blogapplication.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,13 +33,13 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
 
     @Query("SELECT DISTINCT post FROM Post post " +
             "LEFT JOIN post.tags tags " +
-            "LEFT JOIN post.author u " +
-            "WHERE u.id IN :authors " +
-            "OR tags.name IN :tags " +
-            "OR post.createdAt BETWEEN :startOfDay AND :endOfDay")
+            "LEFT JOIN post.author author " +
+            "WHERE (:authors IS NULL OR author.id IN :authors )" +
+            "AND (:tags IS NULL OR tags.id IN :tags) " +
+            "AND (post.createdAt BETWEEN :startOfDay AND :endOfDay)")
     Page<Post> findByAuthorInOrTagsNameInOrCreatedAtBetween(
+            @Param("tags") List<Long> tags,
             @Param("authors") List<Long> authors,
-            @Param("tags") List<String> tags,
             @Param("startOfDay") LocalDateTime startOfDay,
             @Param("endOfDay") LocalDateTime endOfDay,
             Pageable pageable);

@@ -8,13 +8,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserDTO {
-    private Long id;
-
-    @NotBlank(message = "First Name is required")
+public class RegisterRequestDTO {
+    @NotBlank(message = "First name is required")
     private String firstName;
 
-    @NotBlank(message = "Last Name is required")
+    @NotBlank(message = "Last name is required")
     private String lastName;
 
     @Email(message = "Invalid email format")
@@ -23,4 +21,7 @@ public class UserDTO {
 
     @NotBlank(message = "Username is required")
     private String username;
+
+    @NotBlank(message = "Username is required")
+    private String password;
 }

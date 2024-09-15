@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PostSecurityService {
-    public boolean isUserCreatorOfPost(Long postId){
+    public boolean isUserCreatorOfPost(Long postId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         return true;

@@ -66,7 +66,6 @@
 
         .post-content p {
             line-height: 1.5;
-            /* Adjust line spacing for better readability */
         }
 
         .post-tags ul {
@@ -127,7 +126,6 @@
             font-size: 0.8em;
         }
 
-        /* Common button styles */
         input[type="submit"] {
             background-color: #4CAF50;
             padding: 8px 20px;
@@ -138,23 +136,18 @@
             font-weight: bold;
         }
 
-        /* Specific styles for Edit, Delete, and Logout buttons */
         input[type="submit"].edit-button {
             background-color: #4CAF50;
-            /* Green for Edit */
         }
 
         input[type="submit"].delete-button {
             background-color: #f44336;
-            /* Red for Delete */
         }
 
         input[type="submit"].logout-button {
             background-color: #FF9800;
-            /* Orange for Logout */
         }
 
-        /* Hover effects for all buttons */
         input[type="submit"]:hover {
             opacity: 0.7;
             transition: opacity 0.2s;
@@ -213,14 +206,14 @@
             <div style="display: flex; gap:20px">
 
                 <div class="post-delete"
-                    sec:authorize="(hasRole('AUTHOR') and #authentication.principal.id== #vars.post.author.id) || hasRole('ADMIN')">
+                    sec:authorize="hasRole('ADMIN') || (hasRole('AUTHOR') and #authentication.principal.id== #vars.post.author.id)">
                     <form method="get" th:action="@{/{id}/edit (id=${post.id})}">
                         <input type="submit" value="Edit Post" class="edit-button" />
                     </form>
                 </div>
 
                 <div class="post-delete"
-                    sec:authorize="(hasRole('AUTHOR') and #authentication.principal.id== #vars.post.author.id) || hasRole('ADMIN')">
+                    sec:authorize="hasRole('ADMIN') || (hasRole('AUTHOR') and #authentication.principal.id== #vars.post.author.id)">
                     <form method="post" th:action="@{/{id} (id=${post.id})}">
                         <input type="submit" value="Delete Post" class="delete-button" />
                     </form>
@@ -238,9 +231,9 @@
                                 </p>
                                 <p th:text="${comment.comment}">Comment Content</p>
 
-                                <div sec:authorize="(hasRole('AUTHOR') and #authentication.principal.id== #vars.post.author.id)
-                                          ||(hasRole('AUTHOR') and #authentication.principal.id == #vars.comment.author.id)
-                                          || hasRole('ADMIN')" style="display: flex; gap:20px">
+                                <div sec:authorize="hasRole('ADMIN') || (hasRole('AUTHOR') and #authentication.principal.id== #vars.post.author.id)
+                                          ||(hasRole('AUTHOR') and #authentication.principal.id == #vars.comment.author.id)"
+                                    style="display: flex; gap:20px">
                                     <form
                                         th:action="@{/{post_id}/comments/{comment_id}/edit(post_id=${post.id}, comment_id=${comment.id})}">
                                         <input type="submit" value="Edit Comment" class="edit-button" />

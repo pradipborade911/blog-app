@@ -1,6 +1,5 @@
 package io.mountblue.blogapplication.dto;
 
-import io.mountblue.blogapplication.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class CommentDTO {
+public class CommentDetailsDTO {
     private Long id;
 
     private String name;

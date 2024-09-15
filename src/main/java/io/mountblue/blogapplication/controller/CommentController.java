@@ -1,10 +1,11 @@
 package io.mountblue.blogapplication.controller;
 
-import io.mountblue.blogapplication.dto.CommentDTO;
-import io.mountblue.blogapplication.dto.PostDTO;
+import io.mountblue.blogapplication.dto.CommentDetailsDTO;
+import io.mountblue.blogapplication.dto.CommentRequestDTO;
+import io.mountblue.blogapplication.dto.PostDetailsDTO;
 import io.mountblue.blogapplication.service.CommentService;
 import io.mountblue.blogapplication.service.PostService;
-
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -23,17 +24,17 @@ public class CommentController {
     PostService postService;
 
     @PostMapping("/comments/{commentId}/update")
-    @PreAuthorize("@commentService.isCreator(#commentId) || @postService.isOwnerOfCommentedPost(#commentId) || hasRole('ADMIN')")
-    public String updateComment(@PathVariable Long commentId, @ModelAttribute CommentDTO commentDTO) {
-        long postId = commentService.updateComment(commentDTO);
+    @PreAuthorize("@commentService.isCreator(#commentId) || @commentService.isOwnerOfPost(#commentId) || hasRole('ADMIN')")
+    public String updateComment(@Valid @PathVariable Long commentId, @ModelAttribute CommentRequestDTO commentRequestDTO) {
+        Long postId = commentService.updateComment(commentId, commentRequestDTO);
 
         return "redirect:/" + postId;
     }
 
     @PostMapping("/{id}/addComment")
-    public String addComment(@ModelAttribute CommentDTO commentDTO, @PathVariable Long id, Model model) {
-        PostDTO postDTO = postService.addComment(commentDTO, id);
-        model.addAttribute("post", postDTO);
+    public String addComment(@Valid @ModelAttribute CommentRequestDTO commentRequestDTO, @PathVariable Long id, Model model) {
+        PostDetailsDTO postDetailDTO = postService.addComment(commentRequestDTO, id);
+        model.addAttribute("post", postDetailDTO);
 
         return "redirect:/{id}";
     }
@@ -41,8 +42,8 @@ public class CommentController {
     @GetMapping("/{postId}/comments/{commentId}/edit")
     @PreAuthorize("@commentService.isCreator(#commentId) || @postService.isCreator(#postId) || hasRole('ADMIN')")
     public String editCommentForm(@PathVariable Long postId, @PathVariable Long commentId, Model model) {
-        CommentDTO commentDTO = commentService.getCommentById(commentId);
-        model.addAttribute("comment", commentDTO);
+        CommentDetailsDTO commentDetailsDTO = commentService.getCommentById(commentId);
+        model.addAttribute("comment", commentDetailsDTO);
 
         return "edit_comment";
     }
@@ -50,8 +51,8 @@ public class CommentController {
     @PostMapping("/{postId}/comments/{commentId}/delete")
     @PreAuthorize("@commentService.isCreator(#commentId) || @postService.isCreator(#postId) || hasRole('ADMIN')")
     public String deleteComment(@PathVariable Long postId, @PathVariable Long commentId) {
-        PostDTO postDTO = postService.deleteComment(postId, commentId);
+        PostDetailsDTO postDetailsDTO = commentService.deleteComment(postId, commentId);
 
-        return "redirect:/" + postDTO.getId();
+        return "redirect:/" + postDetailsDTO.getId();
     }
 }

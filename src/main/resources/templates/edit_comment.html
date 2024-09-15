@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <title>Edit Comment</title>
     <style>
@@ -9,9 +10,26 @@
             padding: 20px;
         }
 
-        h1 {
+        .container {
+            padding: 20px;
+            margin-top: 5px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
             margin-bottom: 20px;
-            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         form {
@@ -42,7 +60,7 @@
         }
 
         button {
-            background-color: #4CAF50; /* Green */
+            background-color: #4CAF50;
             border: none;
             color: white;
             padding: 10px 20px;
@@ -69,38 +87,41 @@
         }
     </style>
 </head>
-<body>
-<div class="header">
-    <form th:action="@{/}" id="blogForm">
-        <h1 onclick="document.getElementById('blogForm').submit();" style="cursor: pointer;">
-            Blog Application
-        </h1>
-    </form>
 
-    <div class="header-right">
-        <div class="search-login options">
-            <form class="logout" action="#" th:action="@{/logout}" method="POST">
-                <input type="submit" value="Logout">
-            </form>
+<body>
+    <div class="header">
+        <form th:action="@{/}" id="blogForm">
+            <h1 onclick="document.getElementById('blogForm').submit();" style="cursor: pointer;">
+                Blog Application
+            </h1>
+        </form>
+
+        <div class="header-right">
+            <div class="search-login options">
+                <form class="logout" action="#" th:action="@{/logout}" method="POST">
+                    <input type="submit" value="Logout">
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<h2>Edit Comment</h2>  <p>Name: <span th:text="${comment.name}"></span></p>
-<p>Email: <span th:text="${comment.email}"></span></p>
+    <h2>Edit Comment</h2>
+    <p>Name: <span th:text="${comment.name}"></span></p>
+    <p>Email: <span th:text="${comment.email}"></span></p>
 
     <form method="post" th:action="@{/comments/{comment_id}/update(comment_id=${comment.id})}">
-    <input type="hidden" name="id" th:value="${comment.id}"/>
+        <input type="hidden" name="id" th:value="${comment.id}" />
 
-    <div>
-        <label for="comment">Comment:</label>
-        <textarea id="comment" name="comment" rows="4" cols="50" required th:text="${comment.comment}"></textarea>
-    </div>
+        <div>
+            <label for="comment">Comment:</label>
+            <textarea id="comment" name="comment" rows="4" cols="50" required th:text="${comment.comment}"></textarea>
+        </div>
 
-    <div>
-        <button type="submit">Update Comment</button>
-    </div>
-</form>
+        <div>
+            <button type="submit">Update Comment</button>
+        </div>
+    </form>
 
 </body>
+
 </html>

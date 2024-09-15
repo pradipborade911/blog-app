@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+
 <head>
     <title>Create New Post</title>
     <style>
@@ -8,20 +9,42 @@
             margin: 20px;
         }
 
+        .container {
+            padding: 20px;
+            margin-top: 5px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header-right {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
         #main {
             display: flex;
             flex-direction: column;
-            align-items: center; /* Center the form horizontally */
+            align-items: center;
         }
 
         #form {
-            width: 500px; /* Adjust the width as needed */
+            width: 500px;
             padding: 20px;
             border: 1px solid #ddd;
             border-radius: 5px;
         }
 
-        #form > * {
+        #form>* {
             margin-bottom: 10px;
         }
 
@@ -30,15 +53,20 @@
             margin-bottom: 5px;
         }
 
-        input, textarea {
+        input,
+        textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 3px;
         }
 
+        #excerpt {
+            height: 100px;
+        }
+
         textarea {
-            height: 200px; /* Adjust the height as needed */
+            height: 200px;
         }
 
         button {
@@ -49,43 +77,63 @@
             border-radius: 3px;
             cursor: pointer;
         }
+
+        input[type="submit"].logout-button {
+            background-color: #FF9800;
+        }
+
+        input[type="submit"].logout-button {
+            background-color: #FF9800;
+        }
+
+        input[type="submit"]:hover {
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
     </style>
 </head>
-<body>
-<div class="header">
-    <form th:action="@{/}" id="blogForm">
-        <h1 onclick="document.getElementById('blogForm').submit();" style="cursor: pointer;">
-            Blog Application
-        </h1>
-    </form>
 
-    <div class="header-right">
-        <div class="search-login options">
-            <form class="logout" action="#" th:action="@{/logout}" method="POST">
-                <input type="submit" value="Logout">
+<body>
+    <div class="container">
+        <div class="header">
+            <form th:action="@{/}" id="blogForm">
+                <h1 onclick="document.getElementById('blogForm').submit();" style="cursor: pointer;">
+                    Blog Application
+                </h1>
+            </form>
+            <div class="header-right">
+                <div class="search-login options">
+                    <div sec:authorize="hasAnyRole('AUTHOR','ADMIN')">
+                        <form class="logout" action="#" th:action="@{/logout}" method="POST">
+                            <input type="submit" value="Logout" class="logout-button">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="main">
+            <h1>New Post</h1>
+            <form th="#" th:action="@{/newpost}" method="post" id="form">
+                <label for="title">Title:</label>
+                <input type="text" id="id" name="id" th:field="${post.id}" hidden>
+
+                <input type="text" id="title" name="title" th:field="${post.title}" placeholder="Title" required>
+
+                <label for="tags">Tags:</label>
+                <input type="text" id="tags" name="tagsList" placeholder="Tags" maxlength="500">
+
+                <label for="excerpt">Excerpt:</label>
+                <textarea id="excerpt" name="excerpt" rows="2" placeholder="Excerpt" th:field="${post.excerpt}"
+                    maxlength="500" required></textarea>
+
+                <label for="content">Content:</label>
+                <textarea id="content" name="content" rows="10" placeholder="Write here..." th:field="${post.content}"
+                    required></textarea>
+
+                <button type="submit">Publish</button>
             </form>
         </div>
-    </div>
-</div>
-<div id="main">
-    <h1>Edit Post</h1>
-    <form th="#" th:action="@{/newpost}" method="post" id="form">
-        <label for="title">Title:</label>
-        <input type="text" id="id" name="id" th:field="${post.id}" hidden>
-
-        <input type="text" id="title" name="title" th:field="${post.title}" placeholder="Title" required>
-
-        <label for="tags">Tags:</label>
-        <input type="text" id="tags" name="tagsList" placeholder="Tags" required>
-
-        <label for="excerpt">Excerpt:</label>
-        <textarea id="excerpt" name="excerpt" rows="2" placeholder="Excerpt" th:field="${post.excerpt}" required></textarea>
-
-        <label for="content">Content:</label>
-        <textarea id="content" name="content" rows="10" placeholder="Write here..." th:field="${post.content}" required></textarea>
-
-        <button type="submit">Publish</button>
-    </form>
-</div>
 </body>
+
 </html>

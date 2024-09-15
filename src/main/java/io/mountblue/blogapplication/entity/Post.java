@@ -27,7 +27,7 @@ public class Post {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "excerpt")
+    @Column(name = "excerpt", columnDefinition = "TEXT")
     private String excerpt;
 
     @Column(name = "content", columnDefinition = "TEXT")
@@ -50,7 +50,7 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY,
@@ -62,7 +62,7 @@ public class Post {
     private Set<Tag> tags = new HashSet<>();
 
     public void addTag(Tag tag) {
-        if(tags==null){
+        if (tags == null) {
             tags = new HashSet<>();
         }
         tags.add(tag);

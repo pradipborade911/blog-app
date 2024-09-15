@@ -2,7 +2,6 @@ package io.mountblue.blogapplication.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,7 +10,8 @@ import java.util.Set;
 
 @Setter
 @Getter
-public class PostDTO {
+public class PostDetailsDTO {
+
     private Long id;
 
     private String title;
@@ -30,12 +30,5 @@ public class PostDTO {
 
     private Set<TagDTO> tags;
 
-    private List<String> tagsList = new ArrayList<>();
-
-    private List<CommentDTO> comments = new ArrayList<>();
-
-    public void addTag(String tag) {
-        tagsList.add(tag);
-    }
-
+    private List<CommentDetailsDTO> comments = new ArrayList<>();
 }
