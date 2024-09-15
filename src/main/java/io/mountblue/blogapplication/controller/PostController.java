@@ -39,7 +39,7 @@ public class PostController {
         model.addAttribute("allTags", postService.findAllTags());
         model.addAttribute("totalPages", postsPage.getTotalPages());
         model.addAttribute("currentPage", page);
-        model.addAttribute("order", sort);
+        model.addAttribute("sort", sort);
 
         return "blog_posts";
     }
@@ -72,7 +72,7 @@ public class PostController {
         model.addAttribute("currentPage", page);
         model.addAttribute("tags", tags);
         model.addAttribute("authors", authors);
-        model.addAttribute("order", sort);
+        model.addAttribute("sort", sort);
         model.addAttribute("start_date", startDate);
         model.addAttribute("end_date", endDate);
 

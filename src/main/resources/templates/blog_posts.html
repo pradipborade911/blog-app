@@ -31,6 +31,7 @@
         .header-right {
             display: flex;
             flex-direction: column;
+            align-items: flex-end;
             gap: 10px;
         }
 
@@ -255,9 +256,9 @@
             <div class="header-right">
                 <div class="search-login options">
                     <form onchange="this.submit()" th:action="@{/}">
-                        <select id="sort" name="order">
-                            <option th:selected="${order == 'latest'}" value="latest">Latest</option>
-                            <option th:selected="${order == 'oldest'}" value="oldest">Oldest</option>
+                        <select id="sort" name="sort">
+                            <option th:selected="${sort == 'latest'}" value="latest">Latest</option>
+                            <option th:selected="${sort == 'oldest'}" value="oldest">Oldest</option>
                         </select>
                     </form>
 
@@ -268,9 +269,9 @@
                     <form th:action="@{/search}">
                         <input class="search-bar" name="search_query" placeholder="Search" th:value="${search_query}"
                             type="text" />
-                        <select hidden name="order">
-                            <option th:selected="${order == 'latest'}" value="latest">Latest</option>
-                            <option th:selected="${order == 'oldest'}" value="oldest">Oldest</option>
+                        <select hidden name="sort">
+                            <option th:selected="${sort == 'latest'}" value="latest">Latest</option>
+                            <option th:selected="${sort == 'oldest'}" value="oldest">Oldest</option>
                         </select>
                         <button type="submit">Search</button>
                     </form>
@@ -339,9 +340,9 @@
 
                         </div>
 
-                        <select hidden name="order">
-                            <option th:selected="${order == 'latest'}" value="latest">Latest</option>
-                            <option th:selected="${order == 'oldest'}" value="oldest">Oldest</option>
+                        <select hidden name="sort">
+                            <option th:selected="${sort == 'latest'}" value="latest">Latest</option>
+                            <option th:selected="${sort == 'oldest'}" value="oldest">Oldest</option>
                         </select>
                         <button type="submit">Apply Filters</button>
                     </form>
@@ -379,7 +380,7 @@
                     <input name="page" th:value="${currentPage - 1}" type="hidden" />
                     <input name="size" th:value="3" type="hidden" />
                     <input name="search_query" th:value="${search_query}" type="hidden" />
-                    <input name="order" th:value="${order}" type="hidden" />
+                    <input name="sort" th:value="${sort}" type="hidden" />
                     <button th:if="${currentPage > 0}" type="submit">Previous</button>
                 </form>
 
@@ -387,7 +388,7 @@
                     <input name="page" th:value="${currentPage + 1}" type="hidden" />
                     <input name="size" th:value="3" type="hidden" />
                     <input name="search_query" th:value="${search_query}" type="hidden" />
-                    <input name="order" th:value="${order}" type="hidden" />
+                    <input name="sort" th:value="${sort}" type="hidden" />
                     <button th:if="${currentPage < totalPages - 1}" type="submit">Next</button>
                 </form>
 
@@ -405,7 +406,7 @@
                     <div th:each="author : ${authors}">
                         <input name="authors" th:value="${author}" type="hidden" />
                     </div>
-                    <input name="order" th:value="${order}" type="hidden" />
+                    <input name="sort" th:value="${sort}" type="hidden" />
                     <input name="start_date" th:value="${start_date}" type="hidden" />
                     <input name="end_date" th:value="${end_date}" type="hidden" />
                     <button th:if="${currentPage > 0}" type="submit">Previous</button>
@@ -419,7 +420,7 @@
                     <div th:each="author : ${authors}">
                         <input name="authors" th:value="${author}" type="hidden" />
                     </div>
-                    <input name="order" th:value="${order}" type="hidden" />
+                    <input name="sort" th:value="${sort}" type="hidden" />
                     <input name="start_date" th:value="${start_date}" type="hidden" />
                     <input name="end_date" th:value="${end_date}" type="hidden" />
                     <button th:if="${currentPage < totalPages - 1}" type="submit">Next</button>
@@ -432,13 +433,13 @@
                 <form method="get" th:action="@{/}">
                     <input name="page" th:value="${currentPage - 1}" type="hidden" />
                     <input name="size" th:value="3" type="hidden" />
-                    <input name="order" th:value="${order}" type="hidden" />
+                    <input name="sort" th:value="${sort}" type="hidden" />
                     <button th:if="${currentPage > 0}" type="submit">Previous</button>
                 </form>
                 <form method="get" th:action="@{/}">
                     <input name="page" th:value="${currentPage + 1}" type="hidden" />
                     <input name="size" th:value="3" type="hidden" />
-                    <input name="order" th:value="${order}" type="hidden" />
+                    <input name="sort" th:value="${sort}" type="hidden" />
                     <button th:if="${currentPage < totalPages - 1}" type="submit">Next</button>
                 </form>
             </div>
