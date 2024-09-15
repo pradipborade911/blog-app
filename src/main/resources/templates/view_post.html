@@ -214,7 +214,7 @@
 
                 <div class="post-delete"
                     sec:authorize="hasRole('ADMIN') || (hasRole('AUTHOR') and #authentication.principal.id== #vars.post.author.id)">
-                    <form method="post" th:action="@{/{id} (id=${post.id})}">
+                    <form method="post" th:action="@{/{id}/delete (id=${post.id})}">
                         <input type="submit" value="Delete Post" class="delete-button" />
                     </form>
                 </div>

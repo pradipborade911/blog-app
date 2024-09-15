@@ -113,7 +113,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}/edit")
-    @PreAuthorize("@postService.isCreator(#id) || hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') || @postService.isCreator(#id)")
     public String editPostForm(@PathVariable Long id, Model model) {
         PostDetailsDTO postDTO = postService.findPostById(id);
         model.addAttribute("post", postDTO);
@@ -124,15 +124,15 @@ public class PostController {
     }
 
     @PostMapping("/{id}/update")
-    @PreAuthorize("@postService.isCreator(#id) || hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') || @postService.isCreator(#id)")
     public String updatePost(@Valid @ModelAttribute PostRequestDTO postRequestDTO, @PathVariable Long id, Model model) {
         PostDetailsDTO postDTO = postService.updatePost(id, postRequestDTO);
 
         return "redirect:/" + postDTO.getId();
     }
 
-    @PostMapping("/{id}")
-    @PreAuthorize("@postService.isCreator(#id) || hasRole('ADMIN')")
+    @PostMapping("/{id}/delete")
+    @PreAuthorize("hasRole('ADMIN') || @postService.isCreator(#id)")
     public String deletePost(@PathVariable Long id, Model model) {
         postService.deletePostById(id);
 

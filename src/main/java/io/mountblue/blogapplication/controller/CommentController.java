@@ -40,7 +40,7 @@ public class CommentController {
     }
 
     @GetMapping("/{postId}/comments/{commentId}/edit")
-    @PreAuthorize("@commentService.isCreator(#commentId) || @postService.isCreator(#postId) || hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') || @commentService.isCreator(#commentId) || @postService.isCreator(#postId)")
     public String editCommentForm(@PathVariable Long postId, @PathVariable Long commentId, Model model) {
         CommentDetailsDTO commentDetailsDTO = commentService.getCommentById(commentId);
         model.addAttribute("comment", commentDetailsDTO);
@@ -49,7 +49,7 @@ public class CommentController {
     }
 
     @PostMapping("/{postId}/comments/{commentId}/delete")
-    @PreAuthorize("@commentService.isCreator(#commentId) || @postService.isCreator(#postId) || hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') || @commentService.isCreator(#commentId) || @postService.isCreator(#postId)")
     public String deleteComment(@PathVariable Long postId, @PathVariable Long commentId) {
         PostDetailsDTO postDetailsDTO = commentService.deleteComment(postId, commentId);
 
