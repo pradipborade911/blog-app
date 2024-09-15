@@ -90,8 +90,8 @@ public class PostController {
         List<PostSummaryDTO> posts = postsPage.getContent();
 
         model.addAttribute("posts", posts);
-        model.addAttribute("authors", postService.findAllAuthors());
-        model.addAttribute("tags", postService.findAllTags());
+        model.addAttribute("allAuthors", postService.findAllAuthors());
+        model.addAttribute("allTags", postService.findAllTags());
         model.addAttribute("totalPages", postsPage.getTotalPages());
         model.addAttribute("currentPage", page);
         model.addAttribute("sort", sort);

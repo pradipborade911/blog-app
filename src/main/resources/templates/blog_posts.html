@@ -396,7 +396,7 @@
 
             <!-- Pagination for filter -->
             <div class="pagination"
-                th:if="${start_date != null or end_date != null  or tags != null and !tags.isEmpty() or authors != null and !authors.isEmpty()}">
+                th:if="${search_query == null && start_date != null or end_date != null  or tags != null and !tags.isEmpty() or authors != null and !authors.isEmpty()}">
                 <form method="get" th:action="@{/filter}">
                     <input name="page" th:value="${currentPage - 1}" type="hidden" />
                     <input name="size" th:value="3" type="hidden" />
