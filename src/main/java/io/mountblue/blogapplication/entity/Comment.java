@@ -27,7 +27,7 @@ public class Comment {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "comment")
+    @Column(name = "comment", columnDefinition = "TEXT")
     private String comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
